@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/tenKey1_button"
+        android:id="@+id/tenKey1Button"
         android:layout_width="wrap_content"
         android:layout_height="47dp"
         android:layout_marginBottom="8dp"
@@ -41,13 +41,13 @@
         app:layout_constraintStart_toEndOf="@+id/tenKey0Button" />
 
     <Button
-        android:id="@+id/tenKey2_button"
+        android:id="@+id/tenKey2Button"
         android:layout_width="wrap_content"
         android:layout_height="47dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:text="2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tenKey1_button" />
+        app:layout_constraintStart_toEndOf="@+id/tenKey1Button" />
 
 </android.support.constraint.ConstraintLayout>
