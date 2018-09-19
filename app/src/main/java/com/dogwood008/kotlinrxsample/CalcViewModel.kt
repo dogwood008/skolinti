@@ -1,4 +1,4 @@
-package com.dogwood008.kotlin_rx_sample
+package com.dogwood008.kotlinrxsample
 
 import android.arch.lifecycle.ViewModel
 
