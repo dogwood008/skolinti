@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = ViewModelProviders.of(this!!).get(CalcViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(CalcViewModel::class.java)
         displayTextView.text = viewModel.display.toString()
     }
 }
