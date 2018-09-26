@@ -1,5 +1,6 @@
 package com.dogwood008.kotlinrxsample
 
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -45,7 +46,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 .doOnNext {
                     val value = binding.viewModel!!.display.get()
-                    postToSlack(value)
+                    if (value == 1234) {
+                        val settingIntent = Intent(this, SettingsActivity::class.java)
+                        startActivity(settingIntent)
+                    } else {
+                        postToSlack(value)
+                    }
                 }
                 .subscribe()
     }
