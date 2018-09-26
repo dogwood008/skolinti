@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel!!.tenKeyObservable
                 .doOnNext {
                     val prevValue = binding.viewModel!!.display.get()
-                    binding.viewModel!!.display.set(it + prevValue)
+                    binding.viewModel!!.display.set(prevValue * 10 + it)
                 }
                 .subscribe()
     }

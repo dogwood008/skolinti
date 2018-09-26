@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <TextView
+        <EditText
             android:id="@+id/displayTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,6 +26,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="@{Integer.toString(viewModel.display)}"
+            android:textSize="30sp"
+            android:maxLength="5"
+            android:inputType="none"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +61,7 @@
                 android:layout_marginBottom="8dp"
                 android:onClickListener="@{() ->viewModel.onClickTenKey(9)}"
                 android:text="9"
-                app:layout_constraintBottom_toTopOf="@+id/tenKeyDummy2Button"
+                app:layout_constraintBottom_toTopOf="@+id/tenKeyEnterButton"
                 app:layout_constraintStart_toEndOf="@+id/tenKey8Button" />
 
             <Button
@@ -90,10 +93,10 @@
                 android:onClickListener="@{() ->viewModel.onClickTenKey(0)}"
                 android:text="0"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tenKeyDummy1Button" />
+                app:layout_constraintStart_toEndOf="@+id/tenKeyBSButton" />
 
             <Button
-                android:id="@+id/tenKeyDummy1Button"
+                android:id="@+id/tenKeyBSButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -131,7 +134,7 @@
                 android:layout_marginStart="8dp"
                 android:onClickListener="@{() ->viewModel.onClickTenKey(7)}"
                 android:text="7"
-                app:layout_constraintBottom_toTopOf="@+id/tenKeyDummy1Button"
+                app:layout_constraintBottom_toTopOf="@+id/tenKeyBSButton"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <Button
@@ -155,7 +158,7 @@
                 app:layout_constraintStart_toEndOf="@+id/tenKey5Button" />
 
             <Button
-                android:id="@+id/tenKeyDummy2Button"
+                android:id="@+id/tenKeyEnterButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
