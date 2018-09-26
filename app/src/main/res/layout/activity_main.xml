@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -10,8 +12,7 @@
             type="com.dogwood008.kotlinrxsample.CalcViewModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
@@ -30,135 +31,138 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/tenKey0Button"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="228dp"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(0)}"
-            android:text="0"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <Button
-            android:id="@+id/tenKey1Button"
-            android:layout_width="wrap_content"
-            android:layout_height="47dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(1)}"
-            android:text="1"
-            app:layout_constraintBottom_toTopOf="@+id/tenKey0Button"
-            app:layout_constraintStart_toStartOf="parent" />
+            <Button
+                android:id="@+id/tenKey8Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(8)}"
+                android:text="8"
+                app:layout_constraintBottom_toTopOf="@+id/tenKey0Button"
+                app:layout_constraintStart_toEndOf="@+id/tenKey7Button" />
 
-        <Button
-            android:id="@+id/tenKey2Button"
-            android:layout_width="wrap_content"
-            android:layout_height="47dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(2)}"
-            android:text="2"
-            app:layout_constraintBottom_toTopOf="@+id/tenKeyDummy1Button"
-            app:layout_constraintStart_toEndOf="@+id/tenKey1Button" />
+            <Button
+                android:id="@+id/tenKey9Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(9)}"
+                android:text="9"
+                app:layout_constraintBottom_toTopOf="@+id/tenKeyDummy2Button"
+                app:layout_constraintStart_toEndOf="@+id/tenKey8Button" />
 
-        <Button
-            android:id="@+id/tenKey3Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(3)}"
-            android:text="3"
-            app:layout_constraintBottom_toTopOf="@+id/tenKeyDummy2Button"
-            app:layout_constraintStart_toEndOf="@+id/tenKey2Button" />
+            <Button
+                android:id="@+id/tenKey1Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(1)}"
+                android:text="1"
+                app:layout_constraintBottom_toTopOf="@+id/tenKey4Button"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/tenKey4Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(4)}"
-            android:text="4"
-            app:layout_constraintBottom_toTopOf="@+id/tenKey1Button"
-            app:layout_constraintStart_toStartOf="parent" />
+            <Button
+                android:id="@+id/tenKey3Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(3)}"
+                android:text="3"
+                app:layout_constraintBottom_toTopOf="@+id/tenKey6Button"
+                app:layout_constraintStart_toEndOf="@+id/tenKey2Button" />
 
-        <Button
-            android:id="@+id/tenKey5Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(5)}"
-            android:text="5"
-            app:layout_constraintBottom_toTopOf="@+id/tenKey2Button"
-            app:layout_constraintStart_toEndOf="@+id/tenKey4Button" />
+            <Button
+                android:id="@+id/tenKey0Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(0)}"
+                android:text="0"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tenKeyDummy1Button" />
 
-        <Button
-            android:id="@+id/tenKey6Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(6)}"
-            android:text="6"
-            app:layout_constraintBottom_toTopOf="@+id/tenKey3Button"
-            app:layout_constraintStart_toEndOf="@+id/tenKey5Button" />
+            <Button
+                android:id="@+id/tenKeyDummy1Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:text="BS"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/tenKey7Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(7)}"
-            android:text="7"
-            app:layout_constraintBottom_toTopOf="@+id/tenKey4Button"
-            app:layout_constraintStart_toStartOf="parent" />
+            <Button
+                android:id="@+id/tenKey5Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(5)}"
+                android:text="5"
+                app:layout_constraintBottom_toTopOf="@+id/tenKey8Button"
+                app:layout_constraintStart_toEndOf="@+id/tenKey4Button" />
 
-        <Button
-            android:id="@+id/tenKey8Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(8)}"
-            android:text="8"
-            app:layout_constraintBottom_toTopOf="@+id/tenKey5Button"
-            app:layout_constraintStart_toEndOf="@+id/tenKey7Button" />
+            <Button
+                android:id="@+id/tenKey4Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(4)}"
+                android:text="4"
+                app:layout_constraintBottom_toTopOf="@+id/tenKey7Button"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/tenKey9Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:onClickListener="@{() ->viewModel.onClickTenKey(9)}"
-            android:text="9"
-            app:layout_constraintBottom_toTopOf="@+id/tenKey6Button"
-            app:layout_constraintStart_toEndOf="@+id/tenKey8Button" />
+            <Button
+                android:id="@+id/tenKey7Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(7)}"
+                android:text="7"
+                app:layout_constraintBottom_toTopOf="@+id/tenKeyDummy1Button"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/tenKeyDummy2Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:text="0"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tenKeyDummy1Button" />
+            <Button
+                android:id="@+id/tenKey2Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(2)}"
+                android:text="2"
+                app:layout_constraintBottom_toTopOf="@+id/tenKey5Button"
+                app:layout_constraintStart_toEndOf="@+id/tenKey1Button" />
 
-        <Button
-            android:id="@+id/tenKeyDummy1Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:text="0"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tenKey0Button" />
+            <Button
+                android:id="@+id/tenKey6Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:onClickListener="@{() ->viewModel.onClickTenKey(6)}"
+                android:text="6"
+                app:layout_constraintBottom_toTopOf="@+id/tenKey9Button"
+                app:layout_constraintStart_toEndOf="@+id/tenKey5Button" />
+
+            <Button
+                android:id="@+id/tenKeyDummy2Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Enter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tenKey0Button" />
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>
 </layout>
