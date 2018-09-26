@@ -13,6 +13,10 @@ class CalcViewModel : BaseObservable() {
 
     private val tenKeySubject = PublishSubject.create<Int>()
     val tenKeyObservable = tenKeySubject.asObservable()!!
+    private val enterKeySubject = PublishSubject.create<Unit>()
+    val enterKeyObservable = enterKeySubject.asObservable()!!
+    private val bsKeySubject = PublishSubject.create<Unit>()
+    val bsKeyObservable = bsKeySubject.asObservable()!!
 
     @get:Bindable
     var display = ObservableInt(0)
@@ -24,5 +28,13 @@ class CalcViewModel : BaseObservable() {
     fun onClickTenKey(num: Int) {
         Log.d(TAG, num.toString())
         tenKeySubject.onNext(num)
+    }
+
+    fun onClickEnterKey() {
+        enterKeySubject.onNext(Unit)
+    }
+
+    fun onClickBSKey() {
+        bsKeySubject.onNext(Unit)
     }
 }

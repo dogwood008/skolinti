@@ -28,6 +28,18 @@ class MainActivity : AppCompatActivity() {
                     binding.viewModel!!.display.set(prevValue * 10 + it)
                 }
                 .subscribe()
+        binding.viewModel!!.bsKeyObservable
+                .doOnNext {
+                    val prevValue = binding.viewModel!!.display.get()
+                    binding.viewModel!!.display.set(prevValue / 10)
+                }
+                .subscribe()
+        binding.viewModel!!.enterKeyObservable
+                .doOnNext {
+                    val value = binding.viewModel!!.display.get()
+                    Log.d(TAG, value.toString())
+                }
+                .subscribe()
     }
 
     private fun showToast(text: Any) {

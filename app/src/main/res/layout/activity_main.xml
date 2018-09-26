@@ -102,6 +102,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:text="BS"
+                android:onClick="@{() ->viewModel.onClickBSKey()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -163,6 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="Enter"
+                android:onClick="@{() ->viewModel.onClickEnterKey()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/tenKey0Button" />
         </android.support.constraint.ConstraintLayout>
