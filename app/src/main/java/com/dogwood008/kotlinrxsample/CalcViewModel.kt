@@ -11,11 +11,11 @@ class CalcViewModel : BaseObservable() {
         private val TAG = CalcViewModel::class.java.simpleName
     }
 
-    private val tenKeySubject = PublishSubject.create<Int>()
+    val tenKeySubject = PublishSubject.create<Int>()
     val tenKeyObservable = tenKeySubject.asObservable()!!
-    private val enterKeySubject = PublishSubject.create<Unit>()
+    val enterKeySubject = PublishSubject.create<Unit>()
     val enterKeyObservable = enterKeySubject.asObservable()!!
-    private val bsKeySubject = PublishSubject.create<Unit>()
+    val bsKeySubject = PublishSubject.create<Unit>()
     val bsKeyObservable = bsKeySubject.asObservable()!!
 
     @get:Bindable

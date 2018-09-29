@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.KeyEvent
 import android.widget.Toast
 import com.dogwood008.kotlinrxsample.databinding.ActivityMainBinding
 import com.github.kittinunf.fuel.httpPost
@@ -75,5 +76,28 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(text: Any) {
         Toast.makeText(this, text.toString(), Toast.LENGTH_SHORT).show()
         Log.d(TAG, text.toString())
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+        Log.d(TAG, event?.keyCode.toString())
+        val keyCodeOfZero = KeyEvent.KEYCODE_0
+        if (event?.action != KeyEvent.ACTION_DOWN) {
+            return super.dispatchKeyEvent(event)
+        }
+
+        when (event.keyCode) {
+            KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3,
+            KeyEvent.KEYCODE_4, KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_7,
+            KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_9 -> {
+                binding.viewModel!!.tenKeySubject.onNext(event.keyCode - keyCodeOfZero)
+            }
+            KeyEvent.KEYCODE_ENTER -> {
+                binding.viewModel!!.enterKeySubject.onNext(Unit)
+            }
+            KeyEvent.KEYCODE_DEL -> {
+                binding.viewModel!!.bsKeySubject.onNext(Unit)
+            }
+        }
+        return super.dispatchKeyEvent(event)
     }
 }
