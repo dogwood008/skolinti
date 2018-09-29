@@ -2,14 +2,14 @@
     <EditTextPreference
         android:defaultValue="0000"
         android:key="admin_pin"
-        android:numeric="integer"
         android:maxLength="4"
+        android:numeric="integer"
         android:title="admin pin" />
 
     <EditTextPreference
         android:defaultValue="https://example.com"
-        android:key="admin_endpoint"
         android:inputType="textUri"
+        android:key="admin_endpoint"
         android:title="POST endpoint url" />
 
 </PreferenceScreen>

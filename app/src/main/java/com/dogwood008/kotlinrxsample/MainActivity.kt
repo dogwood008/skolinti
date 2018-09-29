@@ -65,12 +65,12 @@ class MainActivity : AppCompatActivity() {
 
         slackEndpoint.httpPost().header(header)
                 .body(requestAdapter.toJson(payload)).responseString { _request, _response, result ->
-            when (result) {
-                is Result.Failure -> {
-                    Toast.makeText(this, result.getException().toString(), Toast.LENGTH_LONG).show()
+                    when (result) {
+                        is Result.Failure -> {
+                            Toast.makeText(this, result.getException().toString(), Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
-            }
-        }
     }
 
     private fun showToast(text: Any) {
