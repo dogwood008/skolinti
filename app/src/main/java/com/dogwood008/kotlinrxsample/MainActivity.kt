@@ -15,7 +15,6 @@ import com.squareup.moshi.Moshi
 class MainActivity : AppCompatActivity() {
     companion object {
         private val TAG = MainActivity::class.java.simpleName
-        private val SLACK_ENDPOINT = "http://localhost8000" // TODO: Use SharedPreference
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -62,8 +61,9 @@ class MainActivity : AppCompatActivity() {
         val requestAdapter = moshi.adapter(Slack::class.java)
         val header: HashMap<String, String> = hashMapOf("Content-Type" to "application/json")
         val payload = Slack(text = text.toString())
+        val slackEndpoint = postEndpointUrl(this).toString()
 
-        SLACK_ENDPOINT.httpPost().header(header)
+        slackEndpoint.httpPost().header(header)
                 .body(requestAdapter.toJson(payload)).responseString { _request, _response, result ->
             when (result) {
                 is Result.Failure -> {
