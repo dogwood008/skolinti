@@ -8,9 +8,9 @@
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="com.dogwood008.kotlinrxsample.SettingsActivity$NotificationPreferenceFragment"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/pref_header_notifications" />
+        android:fragment="com.dogwood008.kotlinrxsample.SettingsActivity$AdminPreferenceFragment"
+        android:icon="@drawable/ic_admin_black_24dp"
+        android:title="admin" />
 
     <header
         android:fragment="com.dogwood008.kotlinrxsample.SettingsActivity$DataSyncPreferenceFragment"
