@@ -3,6 +3,7 @@ package com.dogwood008.kotlinrxsample
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.KeyEvent
@@ -11,6 +12,7 @@ import com.dogwood008.kotlinrxsample.databinding.ActivityMainBinding
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.squareup.moshi.Moshi
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -43,11 +45,18 @@ class MainActivity : AppCompatActivity() {
                 .doOnNext {
                     val value = binding.viewModel!!.display.get()
                     Log.d(TAG, value.toString())
-                    if (value == adminPIN(this)) {
-                        val settingIntent = Intent(this, SettingsActivity::class.java)
-                        startActivity(settingIntent)
-                    } else {
-                        postToSlack(value!!)
+                    when {
+                        value == adminPIN(this) -> {
+                            val settingIntent = Intent(this, SettingsActivity::class.java)
+                            startActivity(settingIntent)
+                        }
+                        isUserCode(value!!) -> {
+                            Log.d(TAG, "UserCode")
+                            showLockerPIN()
+                        }
+                        else -> {
+                            postToSlack(value)
+                        }
                     }
                 }
                 .subscribe()
@@ -96,5 +105,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.dispatchKeyEvent(event)
+    }
+
+    private fun isUserCode(input: String): Boolean {
+        val userPrefix = userCodePrefix(this)!!
+        return userPrefix == input.slice(0 until userPrefix.length)
+    }
+
+    private fun showLockerPIN() {
+        binding.viewModel!!.message.set("Please open locker by ${lockerPIN(this)}")
+        Handler().postDelayed({
+            binding.viewModel!!.message.set("message")
+        }, 1000 * 5)
     }
 }

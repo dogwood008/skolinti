@@ -25,6 +25,13 @@ class CalcViewModel : BaseObservable() {
             notifyPropertyChanged(BR.display)
         }
 
+    @get:Bindable
+    var message = ObservableField<String>("Message")
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.message)
+        }
+
     fun onClickTenKey(num: Int) {
         Log.d(TAG, num.toString())
         tenKeySubject.onNext(num)

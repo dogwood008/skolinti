@@ -106,6 +106,10 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("admin_pin"))
+            bindPreferenceSummaryToValue(findPreference("admin_locker_pin"))
+            bindPreferenceSummaryToValue(findPreference("admin_user_code_prefix"))
+            bindPreferenceSummaryToValue(findPreference("admin_eof_code"))
+            bindPreferenceSummaryToValue(findPreference("admin_endpoint"))
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
