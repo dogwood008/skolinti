@@ -13,6 +13,7 @@ fun NumberProgressBar.setProgressCurrent(current: Int) {
 class CalcViewModel : BaseObservable() {
     companion object {
         private val TAG = CalcViewModel::class.java.simpleName
+        private const val MAX_CODE_LENGTH = 5
     }
 
     val tenKeySubject = PublishSubject.create<Int>()
@@ -22,23 +23,21 @@ class CalcViewModel : BaseObservable() {
     @get:Bindable
     var display = ""
         set(value) {
+            if (value.length > MAX_CODE_LENGTH) {
+                return
+            }
             field = value
             notifyPropertyChanged(BR.display)
         }
 
-    @get:Bindable
+    @Bindable
     var message = ObservableField<String>("Message")
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.message)
-        }
 
-    @get:Bindable
+    @Bindable
     var progress = ObservableInt(100)
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.progress)
-        }
+
+    @Bindable
+    var history = ObservableField<String>("")
 
     fun onClickTenKey(num: Int) {
         Log.d(TAG, num.toString())

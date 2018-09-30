@@ -20,6 +20,9 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
     companion object {
         private val TAG = MainActivity::class.java.simpleName
+        private const val TYPE_USER = "user"
+        private const val TYPE_DEVICE = "device"
+        private const val MAX_HISTORY_SIZE = 8
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -48,18 +51,21 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel!!.enterKeySubject
                 .doOnNext {
                     val value = binding.viewModel!!.display
+                    binding.viewModel!!.display = ""
                     Log.d(TAG, value)
                     when {
                         value == adminPIN(this) -> {
                             val settingIntent = Intent(this, SettingsActivity::class.java)
                             startActivity(settingIntent)
                         }
-                        isUserCode(value!!) -> {
-                            Log.d(TAG, "UserCode")
+                        isUserCode(value) -> {
                             showLockerPIN()
+                            appendHistory(value, TYPE_USER)
+                            postToSlack(value)
                         }
                         else -> {
                             postToSlack(value)
+                            appendHistory(value, TYPE_DEVICE)
                         }
                     }
                 }
@@ -118,7 +124,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLockerPIN() {
         val lockerPin = lockerPIN(this)
-        if (lockerPin == null || lockerPin.isEmpty()) {
+        if (lockerPin == null || lockerPin.isEmpty() ||
+                binding.numberProgressBar.visibility == View.VISIBLE) {
             return
         }
         binding.viewModel!!.message.set("Please open locker by $lockerPin")
@@ -141,5 +148,23 @@ class MainActivity : AppCompatActivity() {
                 }
                 .subscribe()
         disposable.set(subscription)
+    }
+
+    private fun appendHistory(code: String, type: String) {
+        var list = binding.viewModel!!.history.get()!!
+        when (type) {
+            TYPE_USER -> {
+                list = "User: $code\n$list"
+            }
+            TYPE_DEVICE -> {
+                list = "Device: $code\n$list"
+            }
+        }
+
+        val splitList = list.split("\n")
+        if (splitList.size > MAX_HISTORY_SIZE + 1) {
+            list = splitList.slice(0 until MAX_HISTORY_SIZE).joinToString("\n")
+        }
+        binding.viewModel!!.history.set(list)
     }
 }
