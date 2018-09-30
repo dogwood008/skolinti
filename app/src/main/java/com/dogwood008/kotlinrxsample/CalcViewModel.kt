@@ -20,7 +20,7 @@ class CalcViewModel : BaseObservable() {
     val bsKeySubject = PublishSubject.create<Unit>()
 
     @get:Bindable
-    var display = ObservableField<String>("")
+    var display = ""
         set(value) {
             field = value
             notifyPropertyChanged(BR.display)

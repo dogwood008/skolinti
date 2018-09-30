@@ -35,20 +35,20 @@ class MainActivity : AppCompatActivity() {
     private fun setEvents() {
         binding.viewModel!!.tenKeySubject
                 .doOnNext {
-                    val prevValue = binding.viewModel!!.display.get()
-                    binding.viewModel!!.display.set(prevValue + it)
+                    val prevValue = binding.viewModel!!.display
+                    binding.viewModel!!.display = prevValue + it
                 }
                 .subscribe()
         binding.viewModel!!.bsKeySubject
                 .doOnNext {
-                    val prevValue = binding.viewModel!!.display.get()
-                    binding.viewModel!!.display.set(prevValue!!.slice(0..prevValue.length - 2))
+                    val prevValue = binding.viewModel!!.display
+                    binding.viewModel!!.display = prevValue.slice(0..prevValue.length - 2)
                 }
                 .subscribe()
         binding.viewModel!!.enterKeySubject
                 .doOnNext {
-                    val value = binding.viewModel!!.display.get()
-                    Log.d(TAG, value.toString())
+                    val value = binding.viewModel!!.display
+                    Log.d(TAG, value)
                     when {
                         value == adminPIN(this) -> {
                             val settingIntent = Intent(this, SettingsActivity::class.java)
