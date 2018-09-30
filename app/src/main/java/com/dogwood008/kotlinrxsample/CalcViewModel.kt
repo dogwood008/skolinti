@@ -13,7 +13,7 @@ fun NumberProgressBar.setProgressCurrent(current: Int) {
 class CalcViewModel : BaseObservable() {
     companion object {
         private val TAG = CalcViewModel::class.java.simpleName
-        private const val MAX_CODE_LENGTH = 5
+        private const val MAX_CODE_LENGTH = 15
     }
 
     val tenKeySubject = PublishSubject.create<Int>()

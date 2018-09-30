@@ -66,7 +66,7 @@
             android:layout_marginStart="8dp"
             android:editable="false"
             android:inputType="none"
-            android:maxLength="5"
+            android:maxLength="15"
             android:text="@{viewModel.display}"
             android:textSize="30sp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
