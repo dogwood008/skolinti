@@ -1,10 +1,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference
-        android:defaultValue="0000"
         android:key="admin_pin"
         android:maxLength="4"
         android:numeric="integer"
         android:title="admin pin" />
+
+    <EditTextPreference
+        android:defaultValue="66"
+        android:inputType="numberDecimal"
+        android:key="admin_eof_code"
+        android:numeric="integer"
+        android:title="End of input code" />
 
     <EditTextPreference
         android:defaultValue="https://example.com"

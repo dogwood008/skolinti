@@ -30,27 +30,24 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel!!.tenKeyObservable
                 .doOnNext {
                     val prevValue = binding.viewModel!!.display.get()
-                    binding.viewModel!!.display.set(prevValue * 10 + it)
+                    binding.viewModel!!.display.set(prevValue + it)
                 }
                 .subscribe()
         binding.viewModel!!.bsKeyObservable
                 .doOnNext {
                     val prevValue = binding.viewModel!!.display.get()
-                    binding.viewModel!!.display.set(prevValue / 10)
+                    binding.viewModel!!.display.set(prevValue!!.slice(0..prevValue.length - 2))
                 }
                 .subscribe()
         binding.viewModel!!.enterKeyObservable
                 .doOnNext {
                     val value = binding.viewModel!!.display.get()
                     Log.d(TAG, value.toString())
-                }
-                .doOnNext {
-                    val value = binding.viewModel!!.display.get()
-                    if (value == 1234) {
+                    if (value == adminPIN(this)) {
                         val settingIntent = Intent(this, SettingsActivity::class.java)
                         startActivity(settingIntent)
                     } else {
-                        postToSlack(value)
+                        postToSlack(value!!)
                     }
                 }
                 .subscribe()
@@ -91,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_9 -> {
                 binding.viewModel!!.tenKeySubject.onNext(event.keyCode - keyCodeOfZero)
             }
-            KeyEvent.KEYCODE_ENTER -> {
+            endOfInputCodes(this) -> {
                 binding.viewModel!!.enterKeySubject.onNext(Unit)
             }
             KeyEvent.KEYCODE_DEL -> {

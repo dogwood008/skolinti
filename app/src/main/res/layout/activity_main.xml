@@ -28,7 +28,7 @@
             android:editable="false"
             android:inputType="none"
             android:maxLength="5"
-            android:text="@{Integer.toString(viewModel.display)}"
+            android:text="@{viewModel.display}"
             android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
