@@ -3,16 +3,19 @@ package com.dogwood008.kotlinrxsample
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.KeyEvent
+import android.view.View
 import android.widget.Toast
 import com.dogwood008.kotlinrxsample.databinding.ActivityMainBinding
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.squareup.moshi.Moshi
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.internal.operators.observable.ObservableJust
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -25,23 +28,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = CalcViewModel()
+        binding.viewModel!!.message.set(getString(R.string.default_message))
         setEvents()
     }
 
     private fun setEvents() {
-        binding.viewModel!!.tenKeyObservable
+        binding.viewModel!!.tenKeySubject
                 .doOnNext {
                     val prevValue = binding.viewModel!!.display.get()
                     binding.viewModel!!.display.set(prevValue + it)
                 }
                 .subscribe()
-        binding.viewModel!!.bsKeyObservable
+        binding.viewModel!!.bsKeySubject
                 .doOnNext {
                     val prevValue = binding.viewModel!!.display.get()
                     binding.viewModel!!.display.set(prevValue!!.slice(0..prevValue.length - 2))
                 }
                 .subscribe()
-        binding.viewModel!!.enterKeyObservable
+        binding.viewModel!!.enterKeySubject
                 .doOnNext {
                     val value = binding.viewModel!!.display.get()
                     Log.d(TAG, value.toString())
@@ -113,9 +117,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLockerPIN() {
-        binding.viewModel!!.message.set("Please open locker by ${lockerPIN(this)}")
-        Handler().postDelayed({
-            binding.viewModel!!.message.set("message")
-        }, 1000 * 5)
+        val lockerPin = lockerPIN(this)
+        if (lockerPin == null || lockerPin.isEmpty()) {
+            return
+        }
+        binding.viewModel!!.message.set("Please open locker by $lockerPin")
+        binding.viewModel!!.progress.set(100)
+        binding.numberProgressBar.visibility = View.VISIBLE
+
+        val disposable = io.reactivex.disposables.SerialDisposable()
+        val subscription = io.reactivex.Observable
+                .interval(100, TimeUnit.MILLISECONDS)
+                .take(101)
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap { ObservableJust(it.toInt()) }
+                .doOnNext {
+                    binding.viewModel!!.progress.set(100 - it)
+                    if (it >= 100) {
+                        binding.viewModel!!.message.set(getString(R.string.default_message))
+                        binding.numberProgressBar.visibility = View.INVISIBLE
+                        disposable.dispose()
+                    }
+                }
+                .subscribe()
+        disposable.set(subscription)
     }
 }

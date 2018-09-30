@@ -1,22 +1,23 @@
 package com.dogwood008.kotlinrxsample
 
-import android.databinding.BaseObservable
-import android.databinding.Bindable
-import android.databinding.ObservableField
+import android.databinding.*
 import android.util.Log
-import rx.subjects.PublishSubject
+import com.daimajia.numberprogressbar.NumberProgressBar
+import io.reactivex.subjects.PublishSubject
+
+@BindingAdapter("custom:progress_current")
+fun NumberProgressBar.setProgressCurrent(current: Int) {
+    this.progress = current
+}
 
 class CalcViewModel : BaseObservable() {
     companion object {
         private val TAG = CalcViewModel::class.java.simpleName
     }
 
-    val tenKeySubject = PublishSubject.create<Int>()!!
-    val tenKeyObservable = tenKeySubject.asObservable()!!
-    val enterKeySubject = PublishSubject.create<Unit>()!!
-    val enterKeyObservable = enterKeySubject.asObservable()!!
-    val bsKeySubject = PublishSubject.create<Unit>()!!
-    val bsKeyObservable = bsKeySubject.asObservable()!!
+    val tenKeySubject = PublishSubject.create<Int>()
+    val enterKeySubject = PublishSubject.create<Unit>()
+    val bsKeySubject = PublishSubject.create<Unit>()
 
     @get:Bindable
     var display = ObservableField<String>("")
@@ -30,6 +31,13 @@ class CalcViewModel : BaseObservable() {
         set(value) {
             field = value
             notifyPropertyChanged(BR.message)
+        }
+
+    @get:Bindable
+    var progress = ObservableInt(100)
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.progress)
         }
 
     fun onClickTenKey(num: Int) {
