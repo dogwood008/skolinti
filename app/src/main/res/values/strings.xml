@@ -80,6 +80,6 @@
     <string name="take_away_button">Take Away</string>
     <string name="return_back_button">Return Back</string>
 
-    <string name="sub_display_user_id">User ID:</string>
-    <string name="sub_display_device_id">Device ID:</string>
+    <string name="sub_message_user_id">User ID:</string>
+    <string name="sub_message_device_id">Device ID:</string>
 </resources>

@@ -73,12 +73,12 @@
             app:layout_constraintTop_toBottomOf="@+id/number_progress_bar" />
 
         <TextView
-            android:id="@+id/subDisplayTextView"
+            android:id="@+id/subMessageTextView"
             android:layout_width="wrap_content"
             android:layout_height="31dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:text="@{viewModel.subDisplay}"
+            android:text="@{viewModel.subMessage}"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/takeAwayButton" />
@@ -88,7 +88,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:inputType="numberDecimal"
             android:maxLength="15"
@@ -96,7 +95,7 @@
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subDisplayTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/subMessageTextView" />
 
         <TextView
             android:id="@+id/historyTextView"

@@ -1,11 +1,9 @@
 package com.dogwood008.kotlinrxsample
 
 import android.content.Intent
-import android.content.res.Resources
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.content.res.ResourcesCompat.getDrawable
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.KeyEvent
@@ -19,6 +17,7 @@ import com.github.kittinunf.result.Result
 import com.squareup.moshi.Moshi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.internal.operators.observable.ObservableJust
+import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 
@@ -26,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
+
+    val onKeyDownEventSubject = PublishSubject.create<KeyEvent>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,15 @@ class MainActivity : AppCompatActivity() {
                     .add(R.id.container, HomeFragment())
                     .commit()
         }
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+        if (event?.action != KeyEvent.ACTION_DOWN) {
+            return super.dispatchKeyEvent(event)
+        }
+
+        onKeyDownEventSubject.onNext(event)
+        return super.dispatchKeyEvent(event)
     }
 
     class HomeFragment : Fragment() {
@@ -56,7 +66,8 @@ class MainActivity : AppCompatActivity() {
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             binding = DataBindingUtil.inflate(inflater, R.layout.home_fragment, container, false)
             binding.viewModel = CalcViewModel()
-            binding.viewModel!!.message.set(getString(R.string.prompt_select_type))
+            //binding.viewModel!!.message.set(getString(R.string.prompt_select_type))
+            StatesBase.WelcomeStates(context!!, binding).call()
             setEvents()
             val view = binding.root
             view.setOnKeyListener { _view, _keyCode, event -> dispatchKeyEvent(event) }
@@ -65,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun setEvents() {
+            (activity as MainActivity).onKeyDownEventSubject.doOnNext { dispatchKeyEvent(it) }.subscribe()
             binding.viewModel!!.tenKeySubject
                     .doOnNext {
                         val prevValue = binding.viewModel!!.display
@@ -100,18 +112,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     .subscribe()
             binding.viewModel!!.takeAwaySubject
-                    .doOnNext { binding.root.background = getDrawable(resources, R.color.takeAwayBg, null) }
-                    .doOnNext { binding.takeAwayButton.elevation = 0f }
-                    .doOnNext { binding.returnBackButton.elevation = convertDpToPixel(8f) }
-                    .doOnNext { binding.viewModel!!.message.set(getString(R.string.prompt_scan)) }
-                    .doOnNext { binding.viewModel!!.subDisplay.set(getString(R.string.sub_display_device_id)) }
+                    .doOnNext { StatesBase.TakeAwayStates(context!!, binding).call() }
                     .subscribe()
             binding.viewModel!!.returnBackSubject
-                    .doOnNext { binding.root.background = getDrawable(resources, R.color.returnBackBg, null) }
-                    .doOnNext { binding.returnBackButton.elevation = 0f }
-                    .doOnNext { binding.takeAwayButton.elevation = convertDpToPixel(8f) }
-                    .doOnNext { binding.viewModel!!.message.set(getString(R.string.prompt_scan)) }
-                    .doOnNext { binding.viewModel!!.subDisplay.set(getString(R.string.sub_display_device_id)) }
+                    .doOnNext { StatesBase.ReturnBackStates(context!!, binding).call() }
                     .subscribe()
         }
 
@@ -211,10 +215,5 @@ class MainActivity : AppCompatActivity() {
             binding.viewModel!!.history.set(list)
         }
 
-        fun convertDpToPixel(dp: Float): Float {
-            val metrics = Resources.getSystem().displayMetrics
-            val px = dp * (metrics.densityDpi / 160f)
-            return Math.round(px).toFloat()
-        }
     }
 }

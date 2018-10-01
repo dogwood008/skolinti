@@ -32,7 +32,7 @@ class CalcViewModel : BaseObservable() {
         }
 
     @Bindable
-    var subDisplay = ObservableField<String>("")
+    var subMessage = ObservableField<String>("")
 
     @Bindable
     val message = ObservableField<String>("Message")
