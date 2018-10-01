@@ -1,7 +1,6 @@
 package com.dogwood008.kotlinrxsample
 
 import android.databinding.*
-import android.util.Log
 import com.daimajia.numberprogressbar.NumberProgressBar
 import io.reactivex.subjects.PublishSubject
 
@@ -19,6 +18,8 @@ class CalcViewModel : BaseObservable() {
     val tenKeySubject = PublishSubject.create<Int>()
     val enterKeySubject = PublishSubject.create<Unit>()
     val bsKeySubject = PublishSubject.create<Unit>()
+    val takeAwaySubject = PublishSubject.create<Unit>()
+    val returnBackSubject = PublishSubject.create<Unit>()
 
     @get:Bindable
     var display = ""
@@ -31,24 +32,22 @@ class CalcViewModel : BaseObservable() {
         }
 
     @Bindable
-    var message = ObservableField<String>("Message")
+    var subDisplay = ObservableField<String>("")
 
     @Bindable
-    var progress = ObservableInt(100)
+    val message = ObservableField<String>("Message")
 
     @Bindable
-    var history = ObservableField<String>("")
+    val progress = ObservableInt(100)
 
-    fun onClickTenKey(num: Int) {
-        Log.d(TAG, num.toString())
-        tenKeySubject.onNext(num)
+    @Bindable
+    val history = ObservableField<String>("")
+
+    fun takeAway() {
+        takeAwaySubject.onNext(Unit)
     }
 
-    fun onClickEnterKey() {
-        enterKeySubject.onNext(Unit)
-    }
-
-    fun onClickBSKey() {
-        bsKeySubject.onNext(Unit)
+    fun returnBack() {
+        returnBackSubject.onNext(Unit)
     }
 }

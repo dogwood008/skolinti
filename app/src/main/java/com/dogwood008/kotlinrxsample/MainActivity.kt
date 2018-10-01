@@ -1,9 +1,11 @@
 package com.dogwood008.kotlinrxsample
 
 import android.content.Intent
+import android.content.res.Resources
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat.getDrawable
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.KeyEvent
@@ -18,6 +20,7 @@ import com.squareup.moshi.Moshi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.internal.operators.observable.ObservableJust
 import java.util.concurrent.TimeUnit
+
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -53,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             binding = DataBindingUtil.inflate(inflater, R.layout.home_fragment, container, false)
             binding.viewModel = CalcViewModel()
-            binding.viewModel!!.message.set(getString(R.string.default_message))
+            binding.viewModel!!.message.set(getString(R.string.prompt_select_type))
             setEvents()
             val view = binding.root
             view.setOnKeyListener { _view, _keyCode, event -> dispatchKeyEvent(event) }
@@ -95,6 +98,20 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
+                    .subscribe()
+            binding.viewModel!!.takeAwaySubject
+                    .doOnNext { binding.root.background = getDrawable(resources, R.color.takeAwayBg, null) }
+                    .doOnNext { binding.takeAwayButton.elevation = 0f }
+                    .doOnNext { binding.returnBackButton.elevation = convertDpToPixel(8f) }
+                    .doOnNext { binding.viewModel!!.message.set(getString(R.string.prompt_scan)) }
+                    .doOnNext { binding.viewModel!!.subDisplay.set(getString(R.string.sub_display_device_id)) }
+                    .subscribe()
+            binding.viewModel!!.returnBackSubject
+                    .doOnNext { binding.root.background = getDrawable(resources, R.color.returnBackBg, null) }
+                    .doOnNext { binding.returnBackButton.elevation = 0f }
+                    .doOnNext { binding.takeAwayButton.elevation = convertDpToPixel(8f) }
+                    .doOnNext { binding.viewModel!!.message.set(getString(R.string.prompt_scan)) }
+                    .doOnNext { binding.viewModel!!.subDisplay.set(getString(R.string.sub_display_device_id)) }
                     .subscribe()
         }
 
@@ -167,7 +184,7 @@ class MainActivity : AppCompatActivity() {
                     .doOnNext {
                         binding.viewModel!!.progress.set(100 - it)
                         if (it >= 100) {
-                            binding.viewModel!!.message.set(getString(R.string.default_message))
+                            binding.viewModel!!.message.set(getString(R.string.prompt_scan))
                             binding.numberProgressBar.visibility = View.INVISIBLE
                             disposable.dispose()
                         }
@@ -192,6 +209,12 @@ class MainActivity : AppCompatActivity() {
                 list = splitList.slice(0 until MAX_HISTORY_SIZE).joinToString("\n")
             }
             binding.viewModel!!.history.set(list)
+        }
+
+        fun convertDpToPixel(dp: Float): Float {
+            val metrics = Resources.getSystem().displayMetrics
+            val px = dp * (metrics.densityDpi / 160f)
+            return Math.round(px).toFloat()
         }
     }
 }

@@ -74,5 +74,12 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
 
-    <string name="default_message">Please scan codes.</string>
+    <string name="prompt_select_type">Please select the type.</string>
+    <string name="prompt_scan">Please scan codes.</string>
+
+    <string name="take_away_button">Take Away</string>
+    <string name="return_back_button">Return Back</string>
+
+    <string name="sub_display_user_id">User ID:</string>
+    <string name="sub_display_device_id">Device ID:</string>
 </resources>
