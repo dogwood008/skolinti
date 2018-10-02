@@ -18,13 +18,6 @@
         android:title="User code prefix" />
 
     <EditTextPreference
-        android:defaultValue="66"
-        android:inputType="numberDecimal"
-        android:key="admin_eof_code"
-        android:numeric="integer"
-        android:title="End of input code" />
-
-    <EditTextPreference
         android:defaultValue="https://example.com"
         android:inputType="textUri"
         android:key="admin_endpoint"

@@ -40,11 +40,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-        if (event?.action != KeyEvent.ACTION_DOWN) {
-            return super.dispatchKeyEvent(event)
+        if (event != null) {
+            onKeyDownEventSubject.onNext(event)
         }
-
-        onKeyDownEventSubject.onNext(event)
         return super.dispatchKeyEvent(event)
     }
 
@@ -56,6 +54,11 @@ class MainActivity : AppCompatActivity() {
             private const val TYPE_USER = "user"
             private const val TYPE_DEVICE = "device"
             private const val MAX_HISTORY_SIZE = 8
+            private val NUM_KEYS = arrayListOf(
+                    KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3,
+                    KeyEvent.KEYCODE_4, KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_7,
+                    KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_9
+            )
         }
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,13 +73,34 @@ class MainActivity : AppCompatActivity() {
             StatesBase.WelcomeStates(context!!, binding).call()
             setEvents()
             val view = binding.root
-            view.setOnKeyListener { _view, _keyCode, event -> dispatchKeyEvent(event) }
             Log.d(TAG, "onCreateView")
             return view
         }
 
         private fun setEvents() {
-            (activity as MainActivity).onKeyDownEventSubject.doOnNext { dispatchKeyEvent(it) }.subscribe()
+            (activity as MainActivity).onKeyDownEventSubject
+                    .filter { it.action == KeyEvent.ACTION_DOWN }
+                    .flatMap {
+                        ObservableJust.fromCallable {
+                            when {
+                                NUM_KEYS.contains(it.keyCode) -> {
+                                    Log.d(TAG, String.format("NUM: %s", it.keyCode - KeyEvent.KEYCODE_0))
+                                    it.keyCode
+                                }
+                                arrayListOf(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_FORWARD_DEL)
+                                        .contains(it.keyCode) -> {
+                                    Log.d(TAG, String.format("DEL: %s", it.keyCode))
+                                    KeyEvent.KEYCODE_DEL
+                                }
+                                else -> {
+                                    Log.d(TAG, String.format("ENT: %s", it.keyCode))
+                                    KeyEvent.KEYCODE_ENTER
+                                }
+                            }
+                        }
+                    }
+                    .doOnNext { dispatchKeyEvent(it) }
+                    .subscribe()
             binding.viewModel!!.tenKeySubject
                     .doOnNext {
                         val prevValue = binding.viewModel!!.display
@@ -90,10 +114,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     .subscribe()
             binding.viewModel!!.enterKeySubject
+                    .filter { !binding.viewModel!!.display.isEmpty() }
                     .doOnNext {
                         val value = binding.viewModel!!.display
                         binding.viewModel!!.display = ""
-                        Log.d(TAG, value)
                         when {
                             value == adminPIN(context!!) -> {
                                 val settingIntent = Intent(context!!, SettingsActivity::class.java)
@@ -141,23 +165,16 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, text.toString())
         }
 
-        private fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-            Log.d(TAG, event?.keyCode.toString())
+        private fun dispatchKeyEvent(keyCode: Int): Boolean {
             val keyCodeOfZero = KeyEvent.KEYCODE_0
-            if (event?.action != KeyEvent.ACTION_DOWN) {
-                return false
-            }
-
-            when (event.keyCode) {
-                KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3,
-                KeyEvent.KEYCODE_4, KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_7,
-                KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_9 -> {
-                    binding.viewModel!!.tenKeySubject.onNext(event.keyCode - keyCodeOfZero)
+            when {
+                NUM_KEYS.contains(keyCode) -> {
+                    binding.viewModel!!.tenKeySubject.onNext(keyCode - keyCodeOfZero)
                 }
-                endOfInputCodes(context!!) -> {
+                keyCode == KeyEvent.KEYCODE_ENTER -> {
                     binding.viewModel!!.enterKeySubject.onNext(Unit)
                 }
-                KeyEvent.KEYCODE_DEL -> {
+                keyCode == KeyEvent.KEYCODE_DEL -> {
                     binding.viewModel!!.bsKeySubject.onNext(Unit)
                 }
             }
@@ -214,6 +231,5 @@ class MainActivity : AppCompatActivity() {
             }
             binding.viewModel!!.history.set(list)
         }
-
     }
 }
