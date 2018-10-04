@@ -7,4 +7,5 @@
     <color name="takeAwayBg">#c5e8ec</color>
     <color name="returnBack">#d6ab80</color>
     <color name="returnBackBg">#ecd9c5</color>
+    <color name="white">#ffffff</color>
 </resources>

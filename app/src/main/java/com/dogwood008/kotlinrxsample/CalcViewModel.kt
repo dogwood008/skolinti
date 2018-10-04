@@ -4,6 +4,8 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.content.Context
 import android.databinding.*
+import android.util.Log
+import android.view.View
 import com.daimajia.numberprogressbar.NumberProgressBar
 import io.reactivex.subjects.PublishSubject
 
@@ -12,8 +14,15 @@ fun NumberProgressBar.setProgressCurrent(current: Int) {
     this.progress = current
 }
 
-class CalcViewModel(application: Application) : AndroidViewModel(Application()), Observable {
-    private var app: Application = application
+@BindingAdapter("custom:drawable_background")
+fun View.setDrawableBackground(colorResourceId: Int) {
+    val TAG = CalcViewModel::class.java.simpleName
+    Log.d(TAG, colorResourceId.toString())
+    this.background = this.context.getDrawable(colorResourceId)
+}
+
+class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
+        AndroidViewModel(Application()), Observable {
 
     // https://developer.android.com/topic/libraries/data-binding/architecture
     private val callbacks: PropertyChangeRegistry = PropertyChangeRegistry()
@@ -66,10 +75,17 @@ class CalcViewModel(application: Application) : AndroidViewModel(Application()),
         }
 
     @Bindable
-    var state = ObservableField<String>()
+    var state = ObservableField<String>("welcome")
         set(value) {
             field = value
-            //notifyPropertyChanged(BR.subMessage)
+            notifyPropertyChanged(BR.state)
+        }
+
+    @Bindable
+    var bgColorResource = ObservableField<Int>(R.color.white)
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.bgColorResource)
         }
 
     @Bindable
@@ -94,10 +110,10 @@ class CalcViewModel(application: Application) : AndroidViewModel(Application()),
         }
 
     fun takeAway() {
-        takeAwaySubject.onNext(app)
+        takeAwaySubject.onNext(getApplication())
     }
 
     fun returnBack() {
-        returnBackSubject.onNext(app)
+        returnBackSubject.onNext(getApplication())
     }
 }

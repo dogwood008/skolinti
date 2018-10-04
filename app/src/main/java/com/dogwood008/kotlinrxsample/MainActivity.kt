@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             binding.viewModel = ViewModelProviders.of(activity!!, factory).get(CalcViewModel::class.java)
             disposable = io.reactivex.disposables.CompositeDisposable()
             //binding.viewModel!!.message.set(getString(R.string.prompt_select_type))
+            Log.d(TAG, binding.viewModel!!.state.get())
             StatesBase.createFromString(binding).call()
             setEvents()
             val view = binding.root

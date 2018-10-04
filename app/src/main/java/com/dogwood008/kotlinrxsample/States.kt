@@ -38,7 +38,7 @@ abstract class StatesBase(protected val binding: HomeFragmentBinding) {
 
     var bgColor: Int = 0
         set(value) {
-            //binding.root.background = value
+            binding.viewModel!!.bgColorResource.set(value)
         }
 
     var takeAwayButtonElevation: Int
@@ -58,7 +58,7 @@ abstract class StatesBase(protected val binding: HomeFragmentBinding) {
         returnBackButtonElevation = 8
         mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
         subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
-        //binding.root.background = context.resources.getDrawable(R.color.takeAwayBg, null)
+        bgColor = R.color.takeAwayBg
     }
 
     protected fun returnBackMode() {
@@ -66,7 +66,7 @@ abstract class StatesBase(protected val binding: HomeFragmentBinding) {
         returnBackButtonElevation = 0
         mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
         subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
-        //binding.root.background = context.resources.getDrawable(R.color.returnBackBg, null)
+        bgColor = R.color.returnBackBg
     }
 
     abstract fun call()
@@ -92,6 +92,7 @@ abstract class StatesBase(protected val binding: HomeFragmentBinding) {
             subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
             binding.displayTextView.visibility = View.VISIBLE
             takeAwayMode()
+            binding.viewModel!!.state.set("takeAway")
         }
     }
 
@@ -102,6 +103,7 @@ abstract class StatesBase(protected val binding: HomeFragmentBinding) {
             subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
             binding.displayTextView.visibility = View.VISIBLE
             returnBackMode()
+            binding.viewModel!!.state.set("returnBack")
         }
     }
 
