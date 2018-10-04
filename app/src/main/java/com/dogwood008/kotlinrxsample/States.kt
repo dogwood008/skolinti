@@ -1,14 +1,28 @@
 package com.dogwood008.kotlinrxsample
 
-import android.content.Context
 import android.content.res.Resources
-import android.support.v4.content.res.ResourcesCompat
 import android.view.View
 import com.dogwood008.kotlinrxsample.databinding.HomeFragmentBinding
 
-abstract class StatesBase(context: Context, binding: HomeFragmentBinding) {
-    protected val context = context
-    protected val binding = binding
+abstract class StatesBase(protected val binding: HomeFragmentBinding) {
+
+    companion object {
+        fun createFromString(binding: HomeFragmentBinding): StatesBase {
+            val state = binding.viewModel!!.state.get()
+            when (state) {
+                "welcome" -> {
+                    return WelcomeStates(binding)
+                }
+                "takeAway" -> {
+                    return TakeAwayStates(binding)
+                }
+                "returnBack" -> {
+                    return ReturnBackStates(binding)
+                }
+            }
+            return WelcomeStates(binding)
+        }
+    }
 
     var mainMessage: String
         set(value) {
@@ -24,8 +38,7 @@ abstract class StatesBase(context: Context, binding: HomeFragmentBinding) {
 
     var bgColor: Int = 0
         set(value) {
-            binding.root.background = ResourcesCompat.getDrawable(
-                    context.resources, value, null)
+            //binding.root.background = value
         }
 
     var takeAwayButtonElevation: Int
@@ -43,20 +56,20 @@ abstract class StatesBase(context: Context, binding: HomeFragmentBinding) {
     protected fun takeAwayMode() {
         takeAwayButtonElevation = 0
         returnBackButtonElevation = 8
-        mainMessage = context.getString(R.string.prompt_scan)
-        subMessage = context.getString(R.string.sub_message_user_id)
-        binding.root.background = context.resources.getDrawable(R.color.takeAwayBg, null)
+        mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
+        subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
+        //binding.root.background = context.resources.getDrawable(R.color.takeAwayBg, null)
     }
 
     protected fun returnBackMode() {
         takeAwayButtonElevation = 8
         returnBackButtonElevation = 0
-        mainMessage = context.getString(R.string.prompt_scan)
-        subMessage = context.getString(R.string.sub_message_user_id)
-        binding.root.background = context.resources.getDrawable(R.color.returnBackBg, null)
+        mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
+        subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
+        //binding.root.background = context.resources.getDrawable(R.color.returnBackBg, null)
     }
 
-    protected abstract fun call()
+    abstract fun call()
 
     private fun convertDpToPixel(dp: Float): Float {
         val metrics = Resources.getSystem().displayMetrics
@@ -64,29 +77,29 @@ abstract class StatesBase(context: Context, binding: HomeFragmentBinding) {
         return Math.round(px).toFloat()
     }
 
-    class WelcomeStates(context: Context, binding: HomeFragmentBinding) : StatesBase(context, binding) {
+    class WelcomeStates(binding: HomeFragmentBinding) : StatesBase(binding) {
         public override fun call() {
-            mainMessage = context.getString(R.string.prompt_select_type)
+            mainMessage = binding.messageTextView.resources.getString(R.string.prompt_select_type)
             binding.subMessageTextView.visibility = View.GONE
             binding.displayTextView.visibility = View.GONE
         }
     }
 
-    class TakeAwayStates(context: Context, binding: HomeFragmentBinding) : StatesBase(context, binding) {
+    class TakeAwayStates(binding: HomeFragmentBinding) : StatesBase(binding) {
         public override fun call() {
-            mainMessage = context.getString(R.string.prompt_scan)
+            mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
             binding.subMessageTextView.visibility = View.VISIBLE
-            subMessage = context.getString(R.string.sub_message_user_id)
+            subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
             binding.displayTextView.visibility = View.VISIBLE
             takeAwayMode()
         }
     }
 
-    class ReturnBackStates(context: Context, binding: HomeFragmentBinding) : StatesBase(context, binding) {
+    class ReturnBackStates(binding: HomeFragmentBinding) : StatesBase(binding) {
         public override fun call() {
-            mainMessage = context.getString(R.string.prompt_scan)
+            mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
             binding.subMessageTextView.visibility = View.VISIBLE
-            subMessage = context.getString(R.string.sub_message_user_id)
+            subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
             binding.displayTextView.visibility = View.VISIBLE
             returnBackMode()
         }

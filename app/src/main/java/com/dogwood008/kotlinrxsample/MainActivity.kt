@@ -1,7 +1,9 @@
 package com.dogwood008.kotlinrxsample
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -26,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
     }
 
-    val onKeyDownEventSubject = PublishSubject.create<KeyEvent>()
+    val onKeyDownEventSubject = PublishSubject.create<Pair<Context, KeyEvent>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
         if (event != null) {
-            onKeyDownEventSubject.onNext(event)
+            onKeyDownEventSubject.onNext(Pair(this, event))
         }
         return super.dispatchKeyEvent(event)
     }
@@ -67,10 +69,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-            binding = DataBindingUtil.inflate(inflater, R.layout.home_fragment, container, false)
-            binding.viewModel = CalcViewModel()
+            //binding = DataBindingUtil.inflate(inflater, R.layout.home_fragment, container, false)
+            binding = HomeFragmentBinding.inflate(layoutInflater)
+            // Specify the current activity as the lifecycle owner.
+            binding.setLifecycleOwner(this)
+            //binding.viewModel = CalcViewModel("welcome")
+            val factory = ViewModelProvider.AndroidViewModelFactory(activity!!.application)
+            binding.viewModel = ViewModelProviders.of(activity!!, factory).get(CalcViewModel::class.java)
             //binding.viewModel!!.message.set(getString(R.string.prompt_select_type))
-            StatesBase.WelcomeStates(context!!, binding).call()
+            StatesBase.createFromString(binding).call()
             setEvents()
             val view = binding.root
             Log.d(TAG, "onCreateView")
@@ -79,27 +86,29 @@ class MainActivity : AppCompatActivity() {
 
         private fun setEvents() {
             (activity as MainActivity).onKeyDownEventSubject
-                    .filter { it.action == KeyEvent.ACTION_DOWN }
+                    .filter { it.second.action == KeyEvent.ACTION_DOWN }
                     .flatMap {
                         ObservableJust.fromCallable {
+                            val context = it.first
+                            val keyCode = it.second.keyCode
                             when {
-                                NUM_KEYS.contains(it.keyCode) -> {
-                                    Log.d(TAG, String.format("NUM: %s", it.keyCode - KeyEvent.KEYCODE_0))
-                                    it.keyCode
+                                NUM_KEYS.contains(keyCode) -> {
+                                    Log.d(TAG, String.format("NUM: %s", keyCode - KeyEvent.KEYCODE_0))
+                                    Pair(context, keyCode)
                                 }
                                 arrayListOf(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_FORWARD_DEL)
-                                        .contains(it.keyCode) -> {
-                                    Log.d(TAG, String.format("DEL: %s", it.keyCode))
-                                    KeyEvent.KEYCODE_DEL
+                                        .contains(keyCode) -> {
+                                    Log.d(TAG, String.format("DEL: %s", keyCode))
+                                    Pair(context, KeyEvent.KEYCODE_DEL)
                                 }
                                 else -> {
-                                    Log.d(TAG, String.format("ENT: %s", it.keyCode))
-                                    KeyEvent.KEYCODE_ENTER
+                                    Log.d(TAG, String.format("ENT: %s", keyCode))
+                                    Pair(context, KeyEvent.KEYCODE_ENTER)
                                 }
                             }
                         }
                     }
-                    .doOnNext { dispatchKeyEvent(it) }
+                    .doOnNext { dispatchKeyEvent(it.first, it.second) }
                     .subscribe()
             binding.viewModel!!.tenKeySubject
                     .doOnNext {
@@ -119,42 +128,42 @@ class MainActivity : AppCompatActivity() {
                         val value = binding.viewModel!!.display
                         binding.viewModel!!.display = ""
                         when {
-                            value == adminPIN(context!!) -> {
+                            value == adminPIN(binding.container.context!!) -> {
                                 val settingIntent = Intent(context!!, SettingsActivity::class.java)
                                 startActivity(settingIntent)
                             }
-                            isUserCode(value) -> {
-                                showLockerPIN()
+                            isUserCode(it, value) -> {
+                                showLockerPIN(it)
                                 appendHistory(value, TYPE_USER)
-                                postToSlack(value)
+                                postToSlack(it, value)
                             }
                             else -> {
-                                postToSlack(value)
+                                postToSlack(it, value)
                                 appendHistory(value, TYPE_DEVICE)
                             }
                         }
                     }
                     .subscribe()
             binding.viewModel!!.takeAwaySubject
-                    .doOnNext { StatesBase.TakeAwayStates(context!!, binding).call() }
+                    .doOnNext { StatesBase.TakeAwayStates(binding).call() }
                     .subscribe()
             binding.viewModel!!.returnBackSubject
-                    .doOnNext { StatesBase.ReturnBackStates(context!!, binding).call() }
+                    .doOnNext { StatesBase.ReturnBackStates(binding).call() }
                     .subscribe()
         }
 
-        private fun postToSlack(text: Any) {
+        private fun postToSlack(context: Context, text: Any) {
             val moshi = Moshi.Builder().build()
             val requestAdapter = moshi.adapter(Slack::class.java)
             val header: HashMap<String, String> = hashMapOf("Content-Type" to "application/json")
             val payload = Slack(text = text.toString())
-            val slackEndpoint = postEndpointUrl(context!!).toString()
+            val slackEndpoint = postEndpointUrl(context).toString()
 
             slackEndpoint.httpPost().header(header)
                     .body(requestAdapter.toJson(payload)).responseString { _request, _response, result ->
                         when (result) {
                             is Result.Failure -> {
-                                Toast.makeText(context!!, result.getException().toString(), Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, result.getException().toString(), Toast.LENGTH_LONG).show()
                             }
                         }
                     }
@@ -165,34 +174,37 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, text.toString())
         }
 
-        private fun dispatchKeyEvent(keyCode: Int): Boolean {
+        private fun dispatchKeyEvent(context: Context, keyCode: Int): Boolean {
             val keyCodeOfZero = KeyEvent.KEYCODE_0
             when {
                 NUM_KEYS.contains(keyCode) -> {
                     binding.viewModel!!.tenKeySubject.onNext(keyCode - keyCodeOfZero)
                 }
                 keyCode == KeyEvent.KEYCODE_ENTER -> {
-                    binding.viewModel!!.enterKeySubject.onNext(Unit)
+                    binding.viewModel!!.enterKeySubject.onNext(context)
                 }
                 keyCode == KeyEvent.KEYCODE_DEL -> {
-                    binding.viewModel!!.bsKeySubject.onNext(Unit)
+                    binding.viewModel!!.bsKeySubject.onNext(context)
                 }
             }
             return false
         }
 
-        private fun isUserCode(input: String): Boolean {
-            val userPrefix = userCodePrefix(context!!)!!
+        private fun isUserCode(context: Context, input: String): Boolean {
+            val userPrefix = userCodePrefix(context)!!
             return userPrefix == input.slice(0 until userPrefix.length)
         }
 
-        private fun showLockerPIN() {
+        private fun showLockerPIN(context: Context) {
             val lockerPin = lockerPIN(context!!)
             if (lockerPin == null || lockerPin.isEmpty() ||
                     binding.numberProgressBar.visibility == View.VISIBLE) {
                 return
             }
-            binding.viewModel!!.message.set("Please open locker by $lockerPin")
+            val messageToShow = String.format(
+                    context.resources.getString(R.string.prompt_open_locker),
+                    lockerPin)
+            binding.viewModel!!.message.set(messageToShow)
             binding.viewModel!!.progress.set(100)
             binding.numberProgressBar.visibility = View.VISIBLE
 
@@ -205,7 +217,8 @@ class MainActivity : AppCompatActivity() {
                     .doOnNext {
                         binding.viewModel!!.progress.set(100 - it)
                         if (it >= 100) {
-                            binding.viewModel!!.message.set(getString(R.string.prompt_scan))
+                            val msgPromptScan = context.getString(R.string.prompt_scan)
+                            binding.viewModel!!.message.set(msgPromptScan)
                             binding.numberProgressBar.visibility = View.INVISIBLE
                             disposable.dispose()
                         }
