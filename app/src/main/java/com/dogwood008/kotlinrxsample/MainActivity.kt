@@ -18,6 +18,7 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.squareup.moshi.Moshi
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.internal.operators.observable.ObservableJust
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     class HomeFragment : Fragment() {
         private lateinit var binding: HomeFragmentBinding
+        private lateinit var disposable: CompositeDisposable
 
         companion object {
             private val TAG = HomeFragment::class.java.simpleName
@@ -68,6 +70,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "onCreate")
         }
 
+
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             //binding = DataBindingUtil.inflate(inflater, R.layout.home_fragment, container, false)
             binding = HomeFragmentBinding.inflate(layoutInflater)
@@ -76,6 +79,7 @@ class MainActivity : AppCompatActivity() {
             //binding.viewModel = CalcViewModel("welcome")
             val factory = ViewModelProvider.AndroidViewModelFactory(activity!!.application)
             binding.viewModel = ViewModelProviders.of(activity!!, factory).get(CalcViewModel::class.java)
+            disposable = io.reactivex.disposables.CompositeDisposable()
             //binding.viewModel!!.message.set(getString(R.string.prompt_select_type))
             StatesBase.createFromString(binding).call()
             setEvents()
@@ -84,8 +88,15 @@ class MainActivity : AppCompatActivity() {
             return view
         }
 
+        override fun onDestroyView() {
+            super.onDestroyView()
+            Log.d(TAG, "onDestroyView()")
+            disposable.dispose()
+        }
+
         private fun setEvents() {
-            (activity as MainActivity).onKeyDownEventSubject
+            Log.d(TAG, "setEvents()")
+            disposable.add((activity as MainActivity).onKeyDownEventSubject
                     .filter { it.second.action == KeyEvent.ACTION_DOWN }
                     .flatMap {
                         ObservableJust.fromCallable {
@@ -109,20 +120,20 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     .doOnNext { dispatchKeyEvent(it.first, it.second) }
-                    .subscribe()
-            binding.viewModel!!.tenKeySubject
+                    .subscribe())
+            disposable.add(binding.viewModel!!.tenKeySubject
                     .doOnNext {
                         val prevValue = binding.viewModel!!.display
                         binding.viewModel!!.display = prevValue + it
                     }
-                    .subscribe()
-            binding.viewModel!!.bsKeySubject
+                    .subscribe())
+            disposable.add(binding.viewModel!!.bsKeySubject
                     .doOnNext {
                         val prevValue = binding.viewModel!!.display
                         binding.viewModel!!.display = prevValue.slice(0..prevValue.length - 2)
                     }
-                    .subscribe()
-            binding.viewModel!!.enterKeySubject
+                    .subscribe())
+            disposable.add(binding.viewModel!!.enterKeySubject
                     .filter { !binding.viewModel!!.display.isEmpty() }
                     .doOnNext {
                         val value = binding.viewModel!!.display
@@ -143,13 +154,13 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    .subscribe()
-            binding.viewModel!!.takeAwaySubject
+                    .subscribe())
+            disposable.add(binding.viewModel!!.takeAwaySubject
                     .doOnNext { StatesBase.TakeAwayStates(binding).call() }
-                    .subscribe()
-            binding.viewModel!!.returnBackSubject
+                    .subscribe())
+            disposable.add(binding.viewModel!!.returnBackSubject
                     .doOnNext { StatesBase.ReturnBackStates(binding).call() }
-                    .subscribe()
+                    .subscribe())
         }
 
         private fun postToSlack(context: Context, text: Any) {
@@ -208,7 +219,7 @@ class MainActivity : AppCompatActivity() {
             binding.viewModel!!.progress.set(100)
             binding.numberProgressBar.visibility = View.VISIBLE
 
-            val disposable = io.reactivex.disposables.SerialDisposable()
+            val localDisposable = io.reactivex.disposables.SerialDisposable()
             val subscription = io.reactivex.Observable
                     .interval(100, TimeUnit.MILLISECONDS)
                     .take(101)
@@ -220,11 +231,12 @@ class MainActivity : AppCompatActivity() {
                             val msgPromptScan = context.getString(R.string.prompt_scan)
                             binding.viewModel!!.message.set(msgPromptScan)
                             binding.numberProgressBar.visibility = View.INVISIBLE
-                            disposable.dispose()
+                            localDisposable.dispose()
                         }
                     }
                     .subscribe()
-            disposable.set(subscription)
+            disposable.add(subscription)
+            localDisposable.set(subscription)
         }
 
         private fun appendHistory(code: String, type: String) {
