@@ -109,6 +109,9 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
             notifyPropertyChanged(BR.history)
         }
 
+    @Bindable
+    var userId = ObservableField<String>("")
+
     fun takeAway() {
         takeAwaySubject.onNext(getApplication())
     }

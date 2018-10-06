@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                             isUserCode(it, value) -> {
                                 showLockerPIN(it)
                                 appendHistory(value, TYPE_USER)
-                                postToSlack(it, value)
+                                setUserId(value)
                             }
                             else -> {
                                 postToSlack(it, value)
@@ -164,11 +164,18 @@ class MainActivity : AppCompatActivity() {
                     .subscribe())
         }
 
+        private fun setUserId(value: String) {
+            binding.viewModel!!.userId.set(value)
+            binding.viewModel!!.subMessage.set("User ID: $value")
+        }
+
         private fun postToSlack(context: Context, text: Any) {
             val moshi = Moshi.Builder().build()
             val requestAdapter = moshi.adapter(Slack::class.java)
             val header: HashMap<String, String> = hashMapOf("Content-Type" to "application/json")
-            val payload = Slack(text = text.toString())
+            val userId = binding.viewModel!!.userId.get()!!
+            val textToPost = "[$userId] $text"
+            val payload = Slack(text = textToPost)
             val slackEndpoint = postEndpointUrl(context).toString()
 
             slackEndpoint.httpPost().header(header)

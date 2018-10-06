@@ -57,7 +57,6 @@ abstract class StatesBase(protected val binding: HomeFragmentBinding) {
         takeAwayButtonElevation = 0
         returnBackButtonElevation = 8
         mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
-        subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
         bgColor = R.color.takeAwayBg
     }
 
@@ -65,7 +64,6 @@ abstract class StatesBase(protected val binding: HomeFragmentBinding) {
         takeAwayButtonElevation = 8
         returnBackButtonElevation = 0
         mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
-        subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
         bgColor = R.color.returnBackBg
     }
 
