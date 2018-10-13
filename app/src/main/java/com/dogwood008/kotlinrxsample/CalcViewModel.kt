@@ -3,9 +3,11 @@ package com.dogwood008.kotlinrxsample
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.content.Context
+import android.content.res.Resources
 import android.databinding.*
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import com.daimajia.numberprogressbar.NumberProgressBar
 import io.reactivex.subjects.PublishSubject
 
@@ -20,6 +22,20 @@ fun View.setDrawableBackground(colorResourceId: Int) {
     Log.d(TAG, colorResourceId.toString())
     this.background = this.context.getDrawable(colorResourceId)
 }
+
+@BindingAdapter("custom:resource_id")
+fun TextView.setResourceId(stringResourceId: Int) {
+    val TAG = CalcViewModel::class.java.simpleName
+    val string = try {
+        resources.getString(stringResourceId)
+    } catch (_e: Resources.NotFoundException) {
+        ""
+    }
+    Log.d(TAG, string)
+    this.text = string
+}
+
+typealias ObservableString = ObservableField<String>
 
 class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
         AndroidViewModel(Application()), Observable {
@@ -37,7 +53,7 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
 
     /**
      * Notifies observers that a specific property has changed. The getter for the
-     * property that changes should be marked with the @Bindable annotation to
+     * property that changes should be marked with the // @Bindable annotation to
      * generate a field in the BR class to be used as the fieldId parameter.
      *
      * @param fieldId The generated BR id for the Bindable field.
@@ -51,72 +67,47 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
         private const val MAX_CODE_LENGTH = 15
     }
 
-    val tenKeySubject = PublishSubject.create<Int>()
-    val enterKeySubject = PublishSubject.create<Context>()
-    val bsKeySubject = PublishSubject.create<Context>()
-    val takeAwaySubject = PublishSubject.create<Context>()
-    val returnBackSubject = PublishSubject.create<Context>()
+    val onTenkeyDown = PublishSubject.create<String>() //MutableLiveData<String>()
+    val onEnterKeyDown = PublishSubject.create<Context>()
+    val onBSKeyDown = PublishSubject.create<Context>()
+    val onTakeAwayState = PublishSubject.create<Unit>()
+    val onReturnBackState = PublishSubject.create<Unit>()
 
-    @get:Bindable
-    var display = ""
-        set(value) {
-            if (value.length > MAX_CODE_LENGTH) {
-                return
-            }
-            field = value
-            notifyPropertyChanged(BR.display)
-        }
-
-    @Bindable
-    var subMessage = ObservableField<String>("")
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.subMessage)
-        }
+    var display = ObservableString("")
+    var displayVisibility = ObservableInt(View.GONE)
+    var message = ObservableString("Message")
+    var messageResourceId = ObservableInt(R.string.prompt_select_mode)
+    var subMessage = ObservableString("")
+    var subMessageInt = ObservableInt(-1)
+    var subMessageVisibility = ObservableInt(View.GONE)
+    var bgColorResource = ObservableInt(R.color.white)
+    var progress = ObservableInt(100)
+    var history = ObservableString("")
+    var userId = ObservableString("")
 
     @Bindable
-    var state = ObservableField<String>("welcome")
+    var state = ObservableString("welcome")
         set(value) {
             field = value
+            Log.d(TAG, "state: $value")
             notifyPropertyChanged(BR.state)
         }
 
-    @Bindable
-    var bgColorResource = ObservableField<Int>(R.color.white)
+    var mode = ObservableString("")
         set(value) {
             field = value
-            notifyPropertyChanged(BR.bgColorResource)
+            Log.d(TAG, "mode: $value")
         }
-
-    @Bindable
-    var message = ObservableField<String>("Message")
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.message)
-        }
-
-    @Bindable
-    var progress = ObservableInt(100)
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.progress)
-        }
-
-    @Bindable
-    var history = ObservableField<String>("")
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.history)
-        }
-
-    @Bindable
-    var userId = ObservableField<String>("")
 
     fun takeAway() {
-        takeAwaySubject.onNext(getApplication())
+        onTakeAwayState.onNext(Unit)
     }
 
     fun returnBack() {
-        returnBackSubject.onNext(getApplication())
+        onReturnBackState.onNext(Unit)
+    }
+
+    private fun setState() {
+        StatesBase.getInstance(this).call()
     }
 }

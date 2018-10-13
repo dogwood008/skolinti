@@ -81,8 +81,6 @@ class MainActivity : AppCompatActivity() {
             binding.viewModel = ViewModelProviders.of(activity!!, factory).get(CalcViewModel::class.java)
             disposable = io.reactivex.disposables.CompositeDisposable()
             //binding.viewModel!!.message.set(getString(R.string.prompt_select_type))
-            Log.d(TAG, binding.viewModel!!.state.get())
-            StatesBase.createFromString(binding).call()
             setEvents()
             val view = binding.root
             Log.d(TAG, "onCreateView")
@@ -93,6 +91,17 @@ class MainActivity : AppCompatActivity() {
             super.onDestroyView()
             Log.d(TAG, "onDestroyView()")
             disposable.dispose()
+        }
+
+        override fun onResume() {
+            super.onResume()
+
+            Log.d(TAG, binding.viewModel!!.state.get())
+            val instance = StatesBase.getInstance(binding.viewModel!!)
+            Log.d(TAG, "state: ${instance.state}")
+            Log.d(TAG, "mode: ${instance.mode}")
+            Log.d(TAG, "onResume")
+            instance.call()
         }
 
         private fun setEvents() {
@@ -122,45 +131,57 @@ class MainActivity : AppCompatActivity() {
                     }
                     .doOnNext { dispatchKeyEvent(it.first, it.second) }
                     .subscribe())
-            disposable.add(binding.viewModel!!.tenKeySubject
+            disposable.add(binding.viewModel!!.onTenkeyDown
                     .doOnNext {
-                        val prevValue = binding.viewModel!!.display
-                        binding.viewModel!!.display = prevValue + it
+                        val prevValue = binding.viewModel!!.display.get()!!
+                        binding.viewModel!!.display.set(prevValue + it)
                     }
                     .subscribe())
-            disposable.add(binding.viewModel!!.bsKeySubject
+            disposable.add(binding.viewModel!!.onBSKeyDown
                     .doOnNext {
-                        val prevValue = binding.viewModel!!.display
-                        binding.viewModel!!.display = prevValue.slice(0..prevValue.length - 2)
+                        val prevValue = binding.viewModel!!.display.get()!!
+                        binding.viewModel!!.display.set(prevValue.slice(0..prevValue.length - 2))
                     }
                     .subscribe())
-            disposable.add(binding.viewModel!!.enterKeySubject
-                    .filter { !binding.viewModel!!.display.isEmpty() }
+            disposable.add(binding.viewModel!!.onEnterKeyDown
+                    .filter { !binding.viewModel!!.display.get()!!.isEmpty() }
                     .doOnNext {
-                        val value = binding.viewModel!!.display
-                        binding.viewModel!!.display = ""
+                        val localContext = it!!
+
+                        val value = binding.viewModel!!.display.get()!!
+                        binding.viewModel!!.display.set("")
                         when {
                             value == adminPIN(binding.container.context!!) -> {
                                 val settingIntent = Intent(context!!, SettingsActivity::class.java)
                                 startActivity(settingIntent)
                             }
-                            isUserCode(it, value) -> {
-                                showLockerPIN(it)
+                            isUserCode(localContext, value) -> {
+                                showLockerPIN(localContext)
                                 appendHistory(value, TYPE_USER)
                                 setUserId(value)
                             }
                             else -> {
-                                postToSlack(it, value)
+                                postToSlack(localContext, value)
                                 appendHistory(value, TYPE_DEVICE)
                             }
                         }
                     }
                     .subscribe())
-            disposable.add(binding.viewModel!!.takeAwaySubject
-                    .doOnNext { StatesBase.TakeAwayStates(binding).call() }
+            disposable.add(binding.viewModel!!.onTakeAwayState
+                    .doOnNext {
+                        val mode = "takeAway"
+                        binding.viewModel!!.mode.set(mode)
+                        StatesBase.UserIDScanPromptStates(binding.viewModel!!, mode, true)
+                                .call()
+                    }
                     .subscribe())
-            disposable.add(binding.viewModel!!.returnBackSubject
-                    .doOnNext { StatesBase.ReturnBackStates(binding).call() }
+            disposable.add(binding.viewModel!!.onReturnBackState
+                    .doOnNext {
+                        val mode = "returnBack"
+                        binding.viewModel!!.mode.set(mode)
+                        StatesBase.UserIDScanPromptStates(binding.viewModel!!, mode, true)
+                                .call()
+                    }
                     .subscribe())
         }
 
@@ -197,13 +218,13 @@ class MainActivity : AppCompatActivity() {
             val keyCodeOfZero = KeyEvent.KEYCODE_0
             when {
                 NUM_KEYS.contains(keyCode) -> {
-                    binding.viewModel!!.tenKeySubject.onNext(keyCode - keyCodeOfZero)
+                    binding.viewModel!!.onTenkeyDown.onNext((keyCode - keyCodeOfZero).toString())
                 }
                 keyCode == KeyEvent.KEYCODE_ENTER -> {
-                    binding.viewModel!!.enterKeySubject.onNext(context)
+                    binding.viewModel!!.onEnterKeyDown.onNext(context)
                 }
                 keyCode == KeyEvent.KEYCODE_DEL -> {
-                    binding.viewModel!!.bsKeySubject.onNext(context)
+                    binding.viewModel!!.onBSKeyDown.onNext(context)
                 }
             }
             return false
@@ -215,7 +236,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun showLockerPIN(context: Context) {
-            val lockerPin = lockerPIN(context!!)
+            val lockerPin = lockerPIN(context)
             if (lockerPin == null || lockerPin.isEmpty() ||
                     binding.numberProgressBar.visibility == View.VISIBLE) {
                 return
