@@ -8,6 +8,8 @@
 
         <import type="java.lang.Integer" />
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.dogwood008.kotlinrxsample.CalcViewModel" />
@@ -18,7 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         custom:drawable_background="@{viewModel.bgColorResource}"
-        tools:context=".MainActivity">
+        tools:context=".MainActivity"
+        android:focusableInTouchMode="true">
 
         <TextView
             android:id="@+id/messageTextView"
@@ -39,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:layout_marginTop="8dp"
-            android:visibility="invisible"
+            android:visibility="@{viewModel.progressBarVisibility}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/messageTextView"
@@ -55,6 +58,7 @@
             android:background="@color/takeAway"
             android:onClick="@{() -> viewModel.takeAway()}"
             android:text="@string/take_away_button"
+            android:visibility="@{viewModel.modeButtonVisibility}"
             app:layout_constraintEnd_toStartOf="@+id/returnBackButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,6 +74,7 @@
             android:background="@color/returnBack"
             android:onClick="@{() -> viewModel.returnBack()}"
             android:text="@string/return_back_button"
+            android:visibility="@{viewModel.modeButtonVisibility}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/takeAwayButton"
@@ -100,6 +105,20 @@
             android:visibility="@{viewModel.subMessageVisibility}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/takeAwayButton" />
+
+        <TextView
+            android:id="@+id/lockerPinTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@{viewModel.lockerPin}"
+            tools:text="9876"
+            android:visibility="@{viewModel.lockerPinVisibility}"
+            android:textSize="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/displayTextView" />
 
         <EditText
             android:id="@+id/displayTextView"
@@ -156,6 +175,7 @@
             app:layout_constraintStart_toEndOf="@+id/stateTextView"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!--
         <TextView
             android:id="@+id/drawableIdTextView"
             android:layout_width="wrap_content"
@@ -166,6 +186,7 @@
             app:layout_constraintStart_toEndOf="@+id/modeTextView"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="setImageResource" />
+        -->
 
     </android.support.constraint.ConstraintLayout>
 </layout>

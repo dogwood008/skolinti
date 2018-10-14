@@ -80,6 +80,10 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
     val onTakeAwayState = PublishSubject.create<Unit>()
     val onReturnBackState = PublishSubject.create<Unit>()
 
+    var modeButtonVisibility = ObservableInt(View.VISIBLE)
+    var progressBarVisibility = ObservableInt(View.GONE)
+    var lockerPin = ObservableString("")
+    var lockerPinVisibility = ObservableInt(View.GONE)
     var display = ObservableString("")
     var displayVisibility = ObservableInt(View.GONE)
     var message = ObservableString("Message")

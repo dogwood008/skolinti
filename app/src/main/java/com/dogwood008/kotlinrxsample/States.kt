@@ -3,6 +3,10 @@ package com.dogwood008.kotlinrxsample
 import android.content.res.Resources
 import android.util.Log
 import android.view.View
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.internal.operators.observable.ObservableJust
+import java.util.concurrent.TimeUnit
 
 abstract class StatesBase(protected val viewModel: CalcViewModel) {
 
@@ -19,6 +23,12 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
                     val mode = viewModel.mode.get()!!
                     Log.d(TAG, mode)
                     return UserIDScanPromptStates(viewModel, mode)
+                }
+                OpenLockerPromptStates.STATE_NAME -> {
+                    return OpenLockerPromptStates(viewModel)
+                }
+                DeviceIDScanPromptStates.STATE_NAME -> {
+                    return DeviceIDScanPromptStates(viewModel)
                 }
             }
             return WelcomeStates(viewModel)
@@ -99,6 +109,22 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             return viewModel.explainImageResourceId.get()
         }
 
+    var progressBarVisibility: Int
+        set(value) {
+            viewModel.progressBarVisibility.set(value)
+        }
+        get() {
+            return viewModel.progressBarVisibility.get()
+        }
+
+    var lockerPinVisibility: Int
+        set(value) {
+            viewModel.lockerPinVisibility.set(value)
+        }
+        get() {
+            return viewModel.lockerPinVisibility.get()
+        }
+
     protected fun takeAwayMode() {
         takeAwayButtonElevation = 0
         returnBackButtonElevation = 8
@@ -143,6 +169,8 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             subMessageVisibility = View.GONE
             displayVisibility = View.GONE
             explainImageResourceId = R.drawable.ic_launcher_foreground
+            lockerPinVisibility = View.GONE
+            progressBarVisibility = View.GONE
         }
     }
 
@@ -183,6 +211,89 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
                     throw RuntimeException("Invalid mode given: $mode")
                 }
             }
+        }
+    }
+
+    class OpenLockerPromptStates(viewModel: CalcViewModel,
+                                 private val lockerPin: String = "",
+                                 private val disposable: CompositeDisposable? = null,
+                                 setValue: Boolean = false) : StatesBase(viewModel) {
+        companion object {
+            const val STATE_NAME = "openLockerPromptStates"
+        }
+
+        override fun state(): String {
+            return STATE_NAME
+        }
+
+        init {
+            if (setValue) {
+                super.state = state()
+            }
+        }
+
+        override fun call() {
+            mainMessageTextId = R.string.prompt_open_locker
+            subMessageVisibility = View.GONE
+            displayVisibility = View.GONE
+            explainImageResourceId = R.drawable.get_smartphone
+            if (disposable != null) {
+                showPIN(disposable)
+                lockerPinVisibility = View.VISIBLE
+                progressBarVisibility = View.VISIBLE
+            }
+        }
+
+        private fun showPIN(disposable: CompositeDisposable) {
+            if (lockerPin.isEmpty() || progressBarVisibility == View.VISIBLE) {
+                return
+            }
+            viewModel.progress.set(100)
+            progressBarVisibility = View.VISIBLE
+
+            val localDisposable = io.reactivex.disposables.SerialDisposable()
+            val subscription = io.reactivex.Observable
+                    .interval(100, TimeUnit.MILLISECONDS)
+                    .take(101)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .flatMap { ObservableJust(it.toInt()) }
+                    .doOnNext {
+                        viewModel.progress.set(100 - it)
+                        if (it >= 100) {
+                            localDisposable.dispose()
+                            DeviceIDScanPromptStates(viewModel, true).call()
+                        }
+                    }
+                    .subscribe()
+            disposable.add(subscription)
+            localDisposable.set(subscription)
+        }
+    }
+
+    class DeviceIDScanPromptStates(viewModel: CalcViewModel,
+                                   setValue: Boolean = false) : StatesBase(viewModel) {
+        companion object {
+            const val STATE_NAME = "deviceIdScanPromptStates"
+        }
+
+        override fun state(): String {
+            return STATE_NAME
+        }
+
+        init {
+            if (setValue) {
+                super.state = state()
+            }
+        }
+
+        override fun call() {
+            mainMessageTextId = R.string.prompt_device_id_scan
+            subMessageTextId = R.string.sub_message_device_id
+            subMessageVisibility = View.VISIBLE
+            displayVisibility = View.VISIBLE
+            explainImageResourceId = R.drawable.read_smartphone_code
+            lockerPinVisibility = View.GONE
+            progressBarVisibility = View.GONE
         }
     }
 }

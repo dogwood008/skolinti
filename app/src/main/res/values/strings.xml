@@ -77,7 +77,7 @@
     <string name="prompt_select_mode">Please select the mode.</string>
     <string name="prompt_open_locker">Please open locker by "%s".</string>
     <string name="prompt_user_id_scan">Please scan user ID codes.</string>
-    <string name="prompt_scan">Please scan codes.</string>
+    <string name="prompt_device_id_scan">Please scan each device\'s codes.</string>
 
     <string name="take_away_button">Take Away</string>
     <string name="return_back_button">Return Back</string>

@@ -17,11 +17,9 @@ import com.dogwood008.kotlinrxsample.databinding.HomeFragmentBinding
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.squareup.moshi.Moshi
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.internal.operators.observable.ObservableJust
 import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
@@ -158,7 +156,7 @@ class MainActivity : AppCompatActivity() {
                             isUserCode(localContext, value) -> {
                                 showLockerPIN(localContext)
                                 appendHistory(value, TYPE_USER)
-                                setUserId(value)
+                                //setUserId(value)
                             }
                             else -> {
                                 postToSlack(localContext, value)
@@ -169,6 +167,7 @@ class MainActivity : AppCompatActivity() {
                     .subscribe())
             disposable.add(binding.viewModel!!.onTakeAwayState
                     .doOnNext {
+                        binding.root.requestFocus()
                         val mode = "takeAway"
                         binding.viewModel!!.mode.set(mode)
                         StatesBase.UserIDScanPromptStates(binding.viewModel!!, mode, true)
@@ -177,6 +176,7 @@ class MainActivity : AppCompatActivity() {
                     .subscribe())
             disposable.add(binding.viewModel!!.onReturnBackState
                     .doOnNext {
+                        binding.root.requestFocus()
                         val mode = "returnBack"
                         binding.viewModel!!.mode.set(mode)
                         StatesBase.UserIDScanPromptStates(binding.viewModel!!, mode, true)
@@ -236,36 +236,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun showLockerPIN(context: Context) {
-            val lockerPin = lockerPIN(context)
-            if (lockerPin == null || lockerPin.isEmpty() ||
-                    binding.numberProgressBar.visibility == View.VISIBLE) {
-                return
-            }
-            val messageToShow = String.format(
-                    context.resources.getString(R.string.prompt_open_locker),
-                    lockerPin)
-            binding.viewModel!!.message.set(messageToShow)
-            binding.viewModel!!.progress.set(100)
-            binding.numberProgressBar.visibility = View.VISIBLE
-
-            val localDisposable = io.reactivex.disposables.SerialDisposable()
-            val subscription = io.reactivex.Observable
-                    .interval(100, TimeUnit.MILLISECONDS)
-                    .take(101)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .flatMap { ObservableJust(it.toInt()) }
-                    .doOnNext {
-                        binding.viewModel!!.progress.set(100 - it)
-                        if (it >= 100) {
-                            val msgPromptScan = context.getString(R.string.prompt_scan)
-                            binding.viewModel!!.message.set(msgPromptScan)
-                            binding.numberProgressBar.visibility = View.INVISIBLE
-                            localDisposable.dispose()
-                        }
-                    }
-                    .subscribe()
-            disposable.add(subscription)
-            localDisposable.set(subscription)
+            val lockerPin = lockerPIN(context)!!
+            StatesBase.OpenLockerPromptStates(
+                    binding.viewModel!!, lockerPin, disposable, true).call()
         }
 
         private fun appendHistory(code: String, type: String) {
