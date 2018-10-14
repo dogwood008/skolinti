@@ -7,9 +7,11 @@ import android.content.res.Resources
 import android.databinding.*
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import com.daimajia.numberprogressbar.NumberProgressBar
 import io.reactivex.subjects.PublishSubject
+
 
 @BindingAdapter("custom:progress_current")
 fun NumberProgressBar.setProgressCurrent(current: Int) {
@@ -33,6 +35,11 @@ fun TextView.setResourceId(stringResourceId: Int) {
     }
     Log.d(TAG, string)
     this.text = string
+}
+
+@BindingAdapter("custom:srcCompat")
+fun ImageView.srcCompat(resourceId: Int) {
+    this.setImageResource(resourceId)
 }
 
 typealias ObservableString = ObservableField<String>
@@ -76,21 +83,24 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
     var display = ObservableString("")
     var displayVisibility = ObservableInt(View.GONE)
     var message = ObservableString("Message")
-    var messageResourceId = ObservableInt(R.string.prompt_select_mode)
+    var messageTextId = ObservableInt(R.string.prompt_select_mode)
     var subMessage = ObservableString("")
-    var subMessageInt = ObservableInt(-1)
+    var subMessageTextId = ObservableInt(-1)
     var subMessageVisibility = ObservableInt(View.GONE)
     var bgColorResource = ObservableInt(R.color.white)
     var progress = ObservableInt(100)
     var history = ObservableString("")
     var userId = ObservableString("")
+    var explainImageResourceId = ObservableInt(R.drawable.read_user_card_code)
+        set(value) {
+            field = value
+            Log.d(TAG, "explainImageResourceId: $value")
+        }
 
-    @Bindable
     var state = ObservableString("welcome")
         set(value) {
             field = value
             Log.d(TAG, "state: $value")
-            notifyPropertyChanged(BR.state)
         }
 
     var mode = ObservableString("")

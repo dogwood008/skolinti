@@ -20,11 +20,6 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
                     Log.d(TAG, mode)
                     return UserIDScanPromptStates(viewModel, mode)
                 }
-                /*
-                "returnBack" -> {
-                    return ReturnBackStates(viewModel)
-                }
-                */
             }
             return WelcomeStates(viewModel)
         }
@@ -38,15 +33,15 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
 
     var mainMessageTextId: Int
         set(value) {
-            viewModel.messageResourceId.set(value)
+            viewModel.messageTextId.set(value)
         }
-        get() = viewModel.messageResourceId.get()
+        get() = viewModel.messageTextId.get()
 
-    var subMessageInt: Int
+    var subMessageTextId: Int
         set(value) {
-            viewModel.subMessageInt.set(value)
+            viewModel.subMessageTextId.set(value)
         }
-        get() = viewModel.subMessageInt.get()
+        get() = viewModel.subMessageTextId.get()
 
     var subMessageVisibility: Int
         set(value) {
@@ -96,6 +91,14 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             return viewModel.mode.get()!!
         }
 
+    var explainImageResourceId: Int
+        set(value) {
+            viewModel.explainImageResourceId.set(value)
+        }
+        get() {
+            return viewModel.explainImageResourceId.get()
+        }
+
     protected fun takeAwayMode() {
         takeAwayButtonElevation = 0
         returnBackButtonElevation = 8
@@ -139,9 +142,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             mainMessageTextId = R.string.prompt_select_mode
             subMessageVisibility = View.GONE
             displayVisibility = View.GONE
-            //FIXME: mainMessage = binding.messageTextView.resources.getString(R.string.prompt_select_mode)
-            // binding.subMessageTextView.visibility = View.GONE
-            // binding.displayTextView.visibility = View.GONE
+            explainImageResourceId = R.drawable.ic_launcher_foreground
         }
     }
 
@@ -150,6 +151,8 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
                                  setValue: Boolean = false) : StatesBase(viewModel) {
         companion object {
             const val STATE_NAME = "userIdScanPromptStates"
+            const val MODE_TAKE_AWAY = "takeAway"
+            const val MODE_RETURN_BACK = "returnBack"
         }
 
         override fun state(): String {
@@ -164,17 +167,16 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
-            //FIXME: mainMessage = binding.messageTextView.resources.getString(R.string.prompt_user_id_scan)
-            //FIXME: subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
             mainMessageTextId = R.string.prompt_user_id_scan
+            subMessageTextId = R.string.sub_message_user_id
             subMessageVisibility = View.VISIBLE
-            subMessageInt = R.string.sub_message_user_id
             displayVisibility = View.VISIBLE
+            explainImageResourceId = R.drawable.read_user_card_code
             when (mode) {
-                "takeAway" -> {
+                UserIDScanPromptStates.MODE_TAKE_AWAY -> {
                     takeAwayMode()
                 }
-                "returnBack" -> {
+                UserIDScanPromptStates.MODE_RETURN_BACK -> {
                     returnBackMode()
                 }
                 else -> {
@@ -183,23 +185,4 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             }
         }
     }
-
-    /*
-    class ReturnBackStates(viewModel: CalcViewModel) : StatesBase(viewModel) {
-        companion object {
-            private const val STATE_NAME = "userIdScanPromptStates"
-        }
-        override fun call() {
-            //FIXME: mainMessage = binding.messageTextView.resources.getString(R.string.prompt_scan)
-            subMessageVisibility = View.VISIBLE
-            subMessageInt = R.string.sub_message_user_id
-            //subMessage = binding.subMessageTextView.resources.getString(R.string.sub_message_user_id)
-            //FIXME: binding.displayTextView.visibility = View.VISIBLE
-            displayVisibility = View.VISIBLE
-            returnBackMode()
-            viewModel.state.set("returnBack")
-        }
-    }
-    */
-
 }
