@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#ff4081</color>
     <color name="takeAway">#80ced6</color>
     <color name="takeAwayBg">#c5e8ec</color>
     <color name="returnBack">#d6ab80</color>

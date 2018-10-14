@@ -19,9 +19,9 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
         custom:drawable_background="@{viewModel.bgColorResource}"
-        tools:context=".MainActivity"
-        android:focusableInTouchMode="true">
+        tools:context=".MainActivity">
 
         <TextView
             android:id="@+id/messageTextView"
@@ -31,11 +31,11 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@{viewModel.message}"
-            custom:resource_id="@{viewModel.messageTextId}"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            custom:resource_id="@{viewModel.messageTextId}" />
 
         <com.daimajia.numberprogressbar.NumberProgressBar
             android:id="@+id/number_progress_bar"
@@ -89,7 +89,7 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/displayTextView"
+            app:layout_constraintTop_toBottomOf="@+id/lockerPinTextView"
             custom:srcCompat="@{viewModel.explainImageResourceId}"
             tools:srcCompat="@drawable/read_user_card_code" />
 
@@ -100,11 +100,11 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:text="@{viewModel.subMessage}"
-            custom:resource_id="@{viewModel.subMessageTextId}"
             android:textSize="20sp"
             android:visibility="@{viewModel.subMessageVisibility}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/takeAwayButton" />
+            app:layout_constraintTop_toBottomOf="@+id/takeAwayButton"
+            custom:resource_id="@{viewModel.subMessageTextId}" />
 
         <TextView
             android:id="@+id/lockerPinTextView"
@@ -113,12 +113,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:text="@{viewModel.lockerPin}"
-            tools:text="9876"
-            android:visibility="@{viewModel.lockerPinVisibility}"
+            android:textColor="@color/colorAccent"
             android:textSize="30sp"
+            android:visibility="@{viewModel.lockerPinVisibility}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/displayTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/displayTextView"
+            tools:text="9876" />
 
         <EditText
             android:id="@+id/displayTextView"
@@ -129,12 +130,12 @@
             android:inputType="numberDecimal"
             android:maxLength="15"
             android:text="@{viewModel.display}"
-            tools:text="12345678"
             android:textSize="30sp"
             android:visibility="@{viewModel.displayVisibility}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subMessageTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/subMessageTextView"
+            tools:text="12345678" />
 
         <TextView
             android:id="@+id/historyTextView"
@@ -160,9 +161,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="@{viewModel.state}"
-            tools:text="state"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="state" />
 
         <TextView
             android:id="@+id/modeTextView"
@@ -171,9 +172,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="@{viewModel.mode}"
-            tools:text="mode"
             app:layout_constraintStart_toEndOf="@+id/stateTextView"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="mode" />
 
         <!--
         <TextView

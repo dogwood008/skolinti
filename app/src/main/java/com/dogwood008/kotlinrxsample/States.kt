@@ -125,6 +125,22 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             return viewModel.lockerPinVisibility.get()
         }
 
+    var lockerPin: String
+        set(value) {
+            viewModel.lockerPin.set(value)
+        }
+        get() {
+            return viewModel.lockerPin.get()!!
+        }
+
+    var modeButtonVisibility: Int
+        set(value) {
+            viewModel.modeButtonVisibility.set(value)
+        }
+        get() {
+            return viewModel.modeButtonVisibility.get()
+        }
+
     protected fun takeAwayMode() {
         takeAwayButtonElevation = 0
         returnBackButtonElevation = 8
@@ -165,6 +181,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
+            modeButtonVisibility = View.VISIBLE
             mainMessageTextId = R.string.prompt_select_mode
             subMessageVisibility = View.GONE
             displayVisibility = View.GONE
@@ -195,6 +212,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
+            modeButtonVisibility = View.GONE
             mainMessageTextId = R.string.prompt_user_id_scan
             subMessageTextId = R.string.sub_message_user_id
             subMessageVisibility = View.VISIBLE
@@ -215,7 +233,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
     }
 
     class OpenLockerPromptStates(viewModel: CalcViewModel,
-                                 private val lockerPin: String = "",
+                                 private val givenLockerPin: String = "",
                                  private val disposable: CompositeDisposable? = null,
                                  setValue: Boolean = false) : StatesBase(viewModel) {
         companion object {
@@ -233,8 +251,10 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
+            modeButtonVisibility = View.GONE
             mainMessageTextId = R.string.prompt_open_locker
-            subMessageVisibility = View.GONE
+            subMessageVisibility = View.VISIBLE
+            subMessageTextId = R.string.sub_message_locker_pin
             displayVisibility = View.GONE
             explainImageResourceId = R.drawable.get_smartphone
             if (disposable != null) {
@@ -245,11 +265,12 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         private fun showPIN(disposable: CompositeDisposable) {
-            if (lockerPin.isEmpty() || progressBarVisibility == View.VISIBLE) {
+            if (givenLockerPin.isEmpty() || progressBarVisibility == View.VISIBLE) {
                 return
             }
             viewModel.progress.set(100)
             progressBarVisibility = View.VISIBLE
+            lockerPin = givenLockerPin
 
             val localDisposable = io.reactivex.disposables.SerialDisposable()
             val subscription = io.reactivex.Observable
@@ -287,6 +308,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
+            modeButtonVisibility = View.GONE
             mainMessageTextId = R.string.prompt_device_id_scan
             subMessageTextId = R.string.sub_message_device_id
             subMessageVisibility = View.VISIBLE
