@@ -141,6 +141,20 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             return viewModel.modeButtonVisibility.get()
         }
 
+    var completeButtonVisibility: Int
+        set(value) {
+            viewModel.completeButtonVisibility.set(value)
+        }
+        get() {
+            return viewModel.completeButtonVisibility.get()
+        }
+
+    var backButtonVisibility: Int
+        set(value) {
+            viewModel.backButtonVisibility.set(value)
+        }
+        get() = viewModel.backButtonVisibility.get()
+
     protected fun takeAwayMode() {
         takeAwayButtonElevation = 0
         returnBackButtonElevation = 8
@@ -181,6 +195,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
+            backButtonVisibility = View.GONE
             modeButtonVisibility = View.VISIBLE
             mainMessageTextId = R.string.prompt_select_mode
             subMessageVisibility = View.GONE
@@ -188,6 +203,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             explainImageResourceId = R.drawable.ic_launcher_foreground
             lockerPinVisibility = View.GONE
             progressBarVisibility = View.GONE
+            completeButtonVisibility = View.GONE
         }
     }
 
@@ -212,12 +228,14 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
+            backButtonVisibility = View.VISIBLE
             modeButtonVisibility = View.GONE
             mainMessageTextId = R.string.prompt_user_id_scan
             subMessageTextId = R.string.sub_message_user_id
             subMessageVisibility = View.VISIBLE
             displayVisibility = View.VISIBLE
             explainImageResourceId = R.drawable.read_user_card_code
+            completeButtonVisibility = View.GONE
             when (mode) {
                 UserIDScanPromptStates.MODE_TAKE_AWAY -> {
                     takeAwayMode()
@@ -251,12 +269,14 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
+            backButtonVisibility = View.GONE
             modeButtonVisibility = View.GONE
             mainMessageTextId = R.string.prompt_open_locker
             subMessageVisibility = View.VISIBLE
             subMessageTextId = R.string.sub_message_locker_pin
             displayVisibility = View.GONE
             explainImageResourceId = R.drawable.get_smartphone
+            completeButtonVisibility = View.GONE
             if (disposable != null) {
                 showPIN(disposable)
                 lockerPinVisibility = View.VISIBLE
@@ -308,6 +328,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
         }
 
         override fun call() {
+            backButtonVisibility = View.GONE
             modeButtonVisibility = View.GONE
             mainMessageTextId = R.string.prompt_device_id_scan
             subMessageTextId = R.string.sub_message_device_id
@@ -316,6 +337,39 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             explainImageResourceId = R.drawable.read_smartphone_code
             lockerPinVisibility = View.GONE
             progressBarVisibility = View.GONE
+            completeButtonVisibility = View.VISIBLE
+        }
+    }
+
+    class FinishStates(viewModel: CalcViewModel,
+                       mode: String = "takeAway",
+                       setValue: Boolean = false) : StatesBase(viewModel) {
+        companion object {
+            const val STATE_NAME = "finishStates"
+        }
+
+        override fun state(): String {
+            return STATE_NAME
+        }
+
+        init {
+            if (setValue) {
+                super.state = state()
+                super.mode = mode
+            }
+        }
+
+        override fun call() {
+            backButtonVisibility = View.GONE
+            modeButtonVisibility = View.GONE
+            mainMessageTextId = R.string.prompt_device_id_scan
+            subMessageTextId = R.string.sub_message_device_id
+            subMessageVisibility = View.VISIBLE
+            displayVisibility = View.VISIBLE
+            explainImageResourceId = R.drawable.read_smartphone_code
+            lockerPinVisibility = View.GONE
+            progressBarVisibility = View.GONE
+            completeButtonVisibility = View.VISIBLE
         }
     }
 }

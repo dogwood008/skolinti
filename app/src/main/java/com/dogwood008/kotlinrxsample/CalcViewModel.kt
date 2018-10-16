@@ -79,7 +79,10 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
     val onBSKeyDown = PublishSubject.create<Context>()
     val onTakeAwayState = PublishSubject.create<Unit>()
     val onReturnBackState = PublishSubject.create<Unit>()
+    val onCompleteState = PublishSubject.create<Unit>()
+    val onBackButtonClicked = PublishSubject.create<Unit>()
 
+    var backButtonVisibility = ObservableInt(View.GONE)
     var modeButtonVisibility = ObservableInt(View.VISIBLE)
     var progressBarVisibility = ObservableInt(View.GONE)
     var lockerPin = ObservableString("")
@@ -95,6 +98,7 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
     var progress = ObservableInt(100)
     var history = ObservableString("")
     var userId = ObservableString("")
+    var completeButtonVisibility = ObservableInt(View.GONE)
     var explainImageResourceId = ObservableInt(R.drawable.read_user_card_code)
         set(value) {
             field = value
@@ -113,6 +117,10 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
             Log.d(TAG, "mode: $value")
         }
 
+    fun back() {
+        onBackButtonClicked.onNext(Unit)
+    }
+
     fun takeAway() {
         onTakeAwayState.onNext(Unit)
     }
@@ -121,7 +129,7 @@ class CalcViewModel(@Suppress("UNUSED_PARAMETER") application: Application) :
         onReturnBackState.onNext(Unit)
     }
 
-    private fun setState() {
-        StatesBase.getInstance(this).call()
+    fun complete() {
+        onCompleteState.onNext(Unit)
     }
 }

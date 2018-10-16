@@ -50,6 +50,19 @@
             custom:progress_max="100" />
 
         <Button
+            android:id="@+id/backButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:onClick="@{() -> viewModel.back()}"
+            android:text="@string/back_button"
+            android:visibility="@{viewModel.backButtonVisibility}"
+            app:layout_constraintTop_toBottomOf="@+id/takeAwayButton"
+            custom:layout_constraintEnd_toEndOf="parent"
+            custom:layout_constraintStart_toStartOf="parent" />
+
+        <Button
             android:id="@+id/takeAwayButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -89,7 +102,7 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lockerPinTextView"
+            app:layout_constraintTop_toBottomOf="@+id/completeButton"
             custom:srcCompat="@{viewModel.explainImageResourceId}"
             tools:srcCompat="@drawable/read_user_card_code" />
 
@@ -98,12 +111,11 @@
             android:layout_width="wrap_content"
             android:layout_height="31dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
             android:text="@{viewModel.subMessage}"
             android:textSize="20sp"
             android:visibility="@{viewModel.subMessageVisibility}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/takeAwayButton"
+            app:layout_constraintTop_toBottomOf="@+id/backButton"
             custom:resource_id="@{viewModel.subMessageTextId}" />
 
         <TextView
@@ -175,6 +187,20 @@
             app:layout_constraintStart_toEndOf="@+id/stateTextView"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="mode" />
+
+        <Button
+            android:id="@+id/completeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/complete_button"
+            android:onClick="@{() -> viewModel.complete()}"
+            android:visibility="@{viewModel.completeButtonVisibility}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lockerPinTextView" />
 
         <!--
         <TextView

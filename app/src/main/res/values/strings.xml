@@ -78,9 +78,13 @@
     <string name="prompt_open_locker">Please open locker.</string>
     <string name="prompt_user_id_scan">Please scan user ID codes.</string>
     <string name="prompt_device_id_scan">Please scan each device\'s codes.</string>
+    <string name="prompt_take_away_device">Please take away devices. Thanks.</string>
+    <string name="prompt_return_back_device">Please return back devices. Thanks.</string>
 
+    <string name="back_button">Back</string>
     <string name="take_away_button">Take Away</string>
     <string name="return_back_button">Return Back</string>
+    <string name="complete_button">Complete</string>
 
     <string name="sub_message_locker_pin">Locker PIN:</string>
     <string name="sub_message_user_id">User ID:</string>

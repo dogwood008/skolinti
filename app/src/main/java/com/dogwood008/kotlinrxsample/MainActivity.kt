@@ -183,6 +183,14 @@ class MainActivity : AppCompatActivity() {
                                 .call()
                     }
                     .subscribe())
+            disposable.add(binding.viewModel!!.onCompleteState
+                    .doOnNext {
+                        StatesBase.FinishStates(binding.viewModel!!,
+                                binding.viewModel!!.mode.get()!!,
+                                true).call()
+                    }
+                    .subscribe()
+            )
         }
 
         private fun setUserId(value: String) {
