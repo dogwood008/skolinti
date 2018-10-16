@@ -154,12 +154,17 @@ class MainActivity : AppCompatActivity() {
                                 startActivity(settingIntent)
                             }
                             isUserCode(localContext, value) -> {
+                                binding.viewModel!!.userId.set(value)
                                 showLockerPIN(localContext)
                                 appendHistory(value, TYPE_USER)
                                 //setUserId(value)
                             }
                             else -> {
-                                postToSlack(localContext, value)
+                                val userId = binding.viewModel!!.userId.get()
+                                val deviceId = value
+                                val mode = binding.viewModel!!.mode.get()
+                                val text = "{\"user_id\":$userId,\"device_id\":$deviceId,\"mode\":\"$mode\"}"
+                                postToSlack(localContext, text)
                                 appendHistory(value, TYPE_DEVICE)
                             }
                         }
@@ -185,12 +190,23 @@ class MainActivity : AppCompatActivity() {
                     .subscribe())
             disposable.add(binding.viewModel!!.onCompleteState
                     .doOnNext {
-                        StatesBase.FinishStates(binding.viewModel!!,
-                                binding.viewModel!!.mode.get()!!,
-                                true).call()
+                        StatesBase.WelcomeStates(binding.viewModel!!, true).call()
+                        // FIXME: make FinishStates
+                        // StatesBase.FinishStates(binding.viewModel!!,
+                        //         binding.viewModel!!.mode.get()!!,
+                        //         true).call()
                     }
                     .subscribe()
             )
+            disposable.add(binding.viewModel!!.onBackButtonClicked
+                    .doOnNext {
+                        when (binding.viewModel!!.state.get()) {
+                            StatesBase.UserIDScanPromptStates.STATE_NAME -> {
+                                StatesBase.WelcomeStates(binding.viewModel!!, true).call()
+                            }
+                        }
+                    }
+                    .subscribe())
         }
 
         private fun setUserId(value: String) {
@@ -202,9 +218,7 @@ class MainActivity : AppCompatActivity() {
             val moshi = Moshi.Builder().build()
             val requestAdapter = moshi.adapter(Slack::class.java)
             val header: HashMap<String, String> = hashMapOf("Content-Type" to "application/json")
-            val userId = binding.viewModel!!.userId.get()!!
-            val textToPost = "[$userId] $text"
-            val payload = Slack(text = textToPost)
+            val payload = Slack(text.toString())
             val slackEndpoint = postEndpointUrl(context).toString()
 
             slackEndpoint.httpPost().header(header)

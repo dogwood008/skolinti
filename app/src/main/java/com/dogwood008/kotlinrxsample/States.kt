@@ -204,6 +204,7 @@ abstract class StatesBase(protected val viewModel: CalcViewModel) {
             lockerPinVisibility = View.GONE
             progressBarVisibility = View.GONE
             completeButtonVisibility = View.GONE
+            bgColor = R.color.white
         }
     }
 
