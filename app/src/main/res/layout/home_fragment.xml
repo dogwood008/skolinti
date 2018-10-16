@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="java.lang.Integer" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.dogwood008.kotlinrxsample.CalcViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
+        custom:drawable_background="@{viewModel.bgColorResource}"
+        tools:context=".MainActivity">
+
+        <TextView
+            android:id="@+id/messageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@{viewModel.message}"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            custom:resource_id="@{viewModel.messageTextId}" />
+
+        <com.daimajia.numberprogressbar.NumberProgressBar
+            android:id="@+id/number_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginTop="8dp"
+            android:visibility="@{viewModel.progressBarVisibility}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/messageTextView"
+            custom:progress_current="@{viewModel.progress}"
+            custom:progress_max="100" />
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:onClick="@{() -> viewModel.back()}"
+            android:text="@string/back_button"
+            android:visibility="@{viewModel.backButtonVisibility}"
+            app:layout_constraintTop_toBottomOf="@+id/takeAwayButton"
+            custom:layout_constraintEnd_toEndOf="parent"
+            custom:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/takeAwayButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/takeAway"
+            android:onClick="@{() -> viewModel.takeAway()}"
+            android:text="@string/take_away_button"
+            android:visibility="@{viewModel.modeButtonVisibility}"
+            app:layout_constraintEnd_toStartOf="@+id/returnBackButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/number_progress_bar" />
+
+        <Button
+            android:id="@+id/returnBackButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/returnBack"
+            android:onClick="@{() -> viewModel.returnBack()}"
+            android:text="@string/return_back_button"
+            android:visibility="@{viewModel.modeButtonVisibility}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/takeAwayButton"
+            app:layout_constraintTop_toBottomOf="@+id/number_progress_bar" />
+
+        <ImageView
+            android:id="@+id/explainImageView"
+            android:layout_width="327dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/completeButton"
+            custom:srcCompat="@{viewModel.explainImageResourceId}"
+            tools:srcCompat="@drawable/read_user_card_code" />
+
+        <TextView
+            android:id="@+id/subMessageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="31dp"
+            android:layout_marginStart="8dp"
+            android:text="@{viewModel.subMessage}"
+            android:textSize="20sp"
+            android:visibility="@{viewModel.subMessageVisibility}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backButton"
+            custom:resource_id="@{viewModel.subMessageTextId}" />
+
+        <TextView
+            android:id="@+id/lockerPinTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@{viewModel.lockerPin}"
+            android:textColor="@color/colorAccent"
+            android:textSize="30sp"
+            android:visibility="@{viewModel.lockerPinVisibility}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/displayTextView"
+            tools:text="9876" />
+
+        <EditText
+            android:id="@+id/displayTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:inputType="numberDecimal"
+            android:maxLength="15"
+            android:text="@{viewModel.display}"
+            android:textSize="30sp"
+            android:visibility="@{viewModel.displayVisibility}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/subMessageTextView"
+            tools:text="12345678" />
+
+        <TextView
+            android:id="@+id/historyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:maxLines="8"
+            android:minLines="8"
+            android:text="@{viewModel.history}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/explainImageView" />
+
+        <Button
+            android:id="@+id/completeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/complete_button"
+            android:onClick="@{() -> viewModel.complete()}"
+            android:visibility="@{viewModel.completeButtonVisibility}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lockerPinTextView" />
+
+        <TextView
+            android:id="@+id/stateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@{viewModel.state}"
+            android:textColor="#808080"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/modeTextView"
+            tools:text="state" />
+
+        <TextView
+            android:id="@+id/modeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@{viewModel.mode}"
+            android:textColor="#808080"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="mode" />
+
+        <!--
+        <TextView
+            android:id="@+id/drawableIdTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@{viewModel.explainImageResourceId}"
+            app:layout_constraintStart_toEndOf="@+id/modeTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="setImageResource" />
+        -->
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

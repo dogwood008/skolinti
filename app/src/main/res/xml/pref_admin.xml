@@ -1,0 +1,26 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="admin_pin"
+        android:maxLength="4"
+        android:numeric="integer"
+        android:title="admin pin" />
+
+    <EditTextPreference
+        android:key="admin_locker_pin"
+        android:maxLength="4"
+        android:numeric="integer"
+        android:title="locker pin" />
+
+    <EditTextPreference
+        android:key="admin_user_code_prefix"
+        android:maxLength="3"
+        android:numeric="integer"
+        android:title="User code prefix" />
+
+    <EditTextPreference
+        android:defaultValue="https://example.com"
+        android:inputType="textUri"
+        android:key="admin_endpoint"
+        android:title="POST endpoint url" />
+
+</PreferenceScreen>
